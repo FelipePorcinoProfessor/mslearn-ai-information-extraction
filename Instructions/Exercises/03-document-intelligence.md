@@ -1,7 +1,7 @@
 ---
 lab:
-  title: Extract data with Azure Document Intelligence
-  description: Use prebuilt and custom Document Intelligence models to extract structured data from documents.
+  title: Extrair dados com Azure Document Intelligence
+  description: Use modelos predefinidos e personalizados do Document Intelligence para extrair dados estruturados de documentos.
   duration: 45
   level: 300
   islab: true
@@ -11,63 +11,63 @@ lab:
     - Azure Document Intelligence
 ---
 
-# Extract data with Azure Document Intelligence
+# Extrair dados com Azure Document Intelligence
 
-**Azure Document Intelligence** is an Azure AI service that enables you to build automated data processing software. This software can extract text, key/value pairs, and tables from form documents using optical character recognition (OCR). Azure Document Intelligence has pre-built models for recognizing invoices, receipts, business cards, and other common document types. The service also provides the capability to train custom models that can extract specific data fields from your own forms.
+O Azure Document Intelligence é um serviço do Azure AI que permite criar software de processamento de dados automatizado. Esse software pode extrair texto, pares chave/valor e tabelas de formulários usando optical character recognition (OCR). O Azure Document Intelligence tem modelos predefinidos para reconhecer faturas, recibos, cartões de visita e outros tipos comuns de documentos. O serviço também oferece a capacidade de treinar modelos personalizados que podem extrair campos de dados específicos dos seus próprios formulários.
 
-In this exercise you'll use both prebuilt and custom Document Intelligence models to extract information from documents.
+Neste exercício, você usará modelos do Document Intelligence, predefinidos e personalizados, para extrair informações de documentos.
 
-This exercise takes approximately **45** minutes.
+Este exercício leva aproximadamente 45 minutos.
 
-## Create a Document Intelligence resource
+## Criar um recurso do Document Intelligence
 
-Azure Document Intelligence is included in Azure AI Services. You'll create a Document Intelligence resource directly from the Document Intelligence Studio.
+O Azure Document Intelligence está incluído no Azure AI Services. Você criará um recurso do Document Intelligence diretamente no Document Intelligence Studio.
 
-1. In a web browser, navigate to the **Document Intelligence Studio** at `https://contentunderstanding.ai.azure.com/documentintelligence/studio` and sign in with your Azure credentials.
-1. In the Studio, select the **Settings** icon (⚙) in the upper-right corner, and then select the **Resource** tab.
-1. Select **Create a new resource** and configure it with the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *Create or select a resource group*
-    - **Name**: *A valid name for your Document Intelligence resource*
-    - **Region**: *Any available region*
-    - **Pricing tier**: Free F0 (*if you don't have a Free tier available, select Standard S0*)
-1. Select **Create** and wait for the resource to be deployed. The Studio automatically connects to the new resource.
+1. Em um navegador da Web, acesse o **Document Intelligence Studio** em `https://contentunderstanding.ai.azure.com/documentintelligence/studio` e entre com suas credenciais do Azure.
+1. No Studio, selecione o ícone **Settings** (⚙) no canto superior direito e, em seguida, selecione a guia **Resource**.
+1. Selecione **Create a new resource** e configure com as seguintes definições:
+    - **Subscription**: Sua assinatura do Azure
+    - **Resource group**: Crie ou selecione um grupo de recursos
+    - **Name**: Um nome válido para o seu recurso do Document Intelligence
+    - **Region**: Qualquer região disponível
+    - **Pricing tier**: Free F0 (se você não tiver um nível Free disponível, selecione Standard S0)
+1. Selecione **Create** e aguarde a implantação do recurso. O Studio se conecta automaticamente ao novo recurso.
 
-## Use the Read model in the portal
+## Usar o modelo Read no portal
 
-Now let's use the Read model in the Studio to analyze a multilingual document:
+Agora vamos usar o modelo Read no Studio para analisar um documento multilíngue:
 
-1. On the Document Intelligence Studio home page, under **Document analysis**, select the **Read** tile.
-1. In the list of documents on the left, select **read-german.pdf**.
-1. At the top toolbar, select **Analyze options**, then enable the **Language** check-box (under **Optional detection**) in the **Analyze options** pane and select **Save**.
-1. At the top-left, select **Run Analysis**.
-1. When the analysis is complete, the text extracted from the image is shown on the right in the **Content** tab. Review this text and compare it to the text in the original image for accuracy.
-1. Select the **Result** tab. This tab displays the extracted JSON code.
-1. Scroll to the bottom of the JSON code in the **Result** tab. Notice that the read model has detected the language of each span indicated by `locale`. Most spans are in German (language code `de`) but you can find other language codes in the spans (e.g., English — language code `en` — in one of the first spans).
+1. Na página inicial do Document Intelligence Studio, em **Document analysis**, selecione o bloco **Read**.
+1. Na lista de documentos à esquerda, selecione **read-german.pdf**.
+1. Na barra de ferramentas superior, selecione **Analyze options**, marque a caixa de seleção **Language** (em **Optional detection**) no painel **Analyze options** e selecione **Save**.
+1. No canto superior esquerdo, selecione **Run Analysis**.
+1. Quando a análise for concluída, o texto extraído da imagem será exibido à direita na guia **Content**. Revise esse texto e compare-o com o texto da imagem original para verificar a precisão.
+1. Selecione a guia **Result**. Essa guia exibe o código JSON extraído.
+1. Role até o final do código JSON na guia **Result**. Observe que o modelo Read detectou o idioma de cada span indicado por `locale`. A maioria dos spans está em alemão (código de idioma `de`), mas você pode encontrar outros códigos de idioma nos spans (por exemplo, inglês — código de idioma `en` — em um dos primeiros spans).
 
-## Analyze an invoice with a prebuilt model using the Python SDK
+## Analisar uma fatura com um modelo predefinido usando o Python SDK
 
-Now let's use the Document Intelligence Python SDK to analyze an invoice programmatically.
+Agora vamos usar o Document Intelligence Python SDK para analisar uma fatura programaticamente.
 
-### Prepare the development environment
+### Preparar o ambiente de desenvolvimento
 
-1. In the [Azure portal](https://portal.azure.com), find the Document Intelligence resource you created earlier. Under **Resource Management**, select **Keys and Endpoint**, and note the **Endpoint** and one of the **Keys**. You'll need these values shortly.
-1. Start **Visual Studio Code**.
-1. Open the Command Palette (press **Ctrl+Shift+P**), type **Git: Clone**, and select it.
-1. In the URL bar, paste the following repository URL and press **Enter**:
+1. No [Azure portal](https://portal.azure.com), localize o recurso do Document Intelligence que você criou anteriormente. Em **Resource Management**, selecione **Keys and Endpoint** e anote o **Endpoint** e uma das **Keys**. Você precisará desses valores em breve.
+1. Inicie o **Visual Studio Code**.
+1. Abra a Command Palette (pressione **Ctrl+Shift+P**), digite **Git: Clone** e selecione a opção.
+1. Na barra de URL, cole o seguinte URL do repositório e pressione **Enter**:
 
     ```
     https://github.com/microsoftlearning/mslearn-ai-information-extraction
     ```
 
-1. Choose a local folder to clone into, and then when prompted, select **Open** to open the cloned repository in VS Code.
-1. Open a new terminal and navigate to the prebuilt Document Intelligence folder:
+1. Escolha uma pasta local para clonar e, quando solicitado, selecione **Open** para abrir o repositório clonado no VS Code.
+1. Abra um novo terminal e navegue até a pasta prebuilt do Document Intelligence:
 
     ```
     cd Labfiles/03-document-intelligence/prebuilt/Python
     ```
 
-1. Install the required libraries:
+1. Instale as bibliotecas necessárias:
 
     ```
     python -m venv labenv
@@ -75,21 +75,21 @@ Now let's use the Document Intelligence Python SDK to analyze an invoice program
     pip install -r requirements.txt
     ```
 
-    > **Note**: The requirements.txt installs the [azure-ai-documentintelligence](https://learn.microsoft.com/python/api/overview/azure/ai-documentintelligence-readme?view=azure-python) Python SDK package and its dependencies.
+    > **Observação**: O requirements.txt instala o pacote do Python SDK [azure-ai-documentintelligence](https://learn.microsoft.com/python/api/overview/azure/ai-documentintelligence-readme?view=azure-python) e suas dependências.
 
-1. In the VS Code Explorer pane, open the **.env** file in **Labfiles/03-document-intelligence/prebuilt/Python**.
-1. In the file, replace the **YOUR_ENDPOINT** and **YOUR_KEY** placeholders with your Document Intelligence resource endpoint and API key.
-1. Save the file (**CTRL+S**).
+1. No painel Explorer do VS Code, abra o arquivo **.env** em **Labfiles/03-document-intelligence/prebuilt/Python**.
+1. No arquivo, substitua os placeholders **YOUR_ENDPOINT** e **YOUR_KEY** pelo endpoint e pela chave de API do seu recurso do Document Intelligence.
+1. Salve o arquivo (**CTRL+S**).
 
-### Add code to analyze an invoice
+### Adicionar código para analisar uma fatura
 
-This is the sample invoice that your code will analyze:
+Esta é a fatura de exemplo que seu código irá analisar:
 
 ![Screenshot showing a sample invoice document.](./media/sample-invoice.png)
 
-1. In VS Code, open the **document-analysis.py** file.
+1. No VS Code, abra o arquivo **document-analysis.py**.
 
-1. In the code file, find the comment **Add references** and add the following code:
+1. No arquivo de código, localize o comentário **Add references** e adicione o seguinte código:
 
     ```python
     # Add references
@@ -98,7 +98,7 @@ This is the sample invoice that your code will analyze:
     from azure.ai.documentintelligence.models import AnalyzeDocumentRequest
     ```
 
-1. Find the comment **Create the client** and add the following code (being careful to maintain the correct indentation):
+1. Localize o comentário **Create the client** e adicione o seguinte código (tomando cuidado para manter a indentação correta):
 
     ```python
     # Create the client
@@ -107,7 +107,7 @@ This is the sample invoice that your code will analyze:
     )
     ```
 
-1. Find the comment **Analyze the invoice** and add the following code:
+1. Localize o comentário **Analyze the invoice** e adicione o seguinte código:
 
     ```python
     # Analyze the invoice
@@ -118,7 +118,7 @@ This is the sample invoice that your code will analyze:
     )
     ```
 
-1. Find the comment **Display invoice information to the user** and add the following code:
+1. Localize o comentário **Display invoice information to the user** e adicione o seguinte código:
 
     ```python
     # Display invoice information to the user
@@ -140,93 +140,93 @@ This is the sample invoice that your code will analyze:
             print(f"Invoice Total: {amount.get('currencySymbol', '$')}{amount.get('amount')}, with confidence {invoice_total.get('confidence')}.")
     ```
 
-1. Review the code you added, which:
-    - Creates a `DocumentIntelligenceClient` with your endpoint and credentials.
-    - Uses the `prebuilt-invoice` model to analyze the document from a URL.
-    - Iterates through the results and prints the vendor name, customer name, and invoice total.
+1. Revise o código que você adicionou, que:
+    - Cria um `DocumentIntelligenceClient` com seu endpoint e suas credenciais.
+    - Usa o modelo `prebuilt-invoice` para analisar o documento a partir de uma URL.
+    - Itera pelos resultados e imprime o nome do fornecedor, o nome do cliente e o total da fatura.
 
-1. Save the file (**CTRL+S**).
-1. In the VS Code terminal, run the application:
+1. Salve o arquivo (**CTRL+S**).
+1. No terminal do VS Code, execute o aplicativo:
 
     ```
     python document-analysis.py
     ```
 
-1. Review the output. The program should display the vendor name, customer name, and invoice total with confidence levels. Compare the values with the sample invoice shown above.
+1. Revise a saída. O programa deve exibir o nome do fornecedor, o nome do cliente e o total da fatura com níveis de confiança. Compare os valores com a fatura de exemplo mostrada acima.
 
-## Train and test a custom model
+## Treinar e testar um modelo personalizado
 
-The prebuilt models are useful for common document types, but often you need to extract specific data from your own forms. You can train a custom Document Intelligence model to extract the specific fields you need.
+Os modelos predefinidos são úteis para tipos comuns de documentos, mas, muitas vezes, você precisa extrair dados específicos de seus próprios formulários. Você pode treinar um modelo personalizado do Document Intelligence para extrair os campos específicos de que precisa.
 
-### Prepare training data
+### Preparar os dados de treinamento
 
-A setup script has been provided to create a storage account and upload sample forms for training.
+Foi fornecido um script de configuração para criar uma conta de armazenamento e fazer upload de formulários de exemplo para treinamento.
 
-1. In the VS Code terminal, navigate to the custom model folder:
+1. No terminal do VS Code, navegue até a pasta do modelo personalizado:
 
     ```
     cd ../../custom
     ```
 
-    > **Tip**: If you're unsure of your current directory, run `cd` to check.
+    > **Dica**: Se você não tiver certeza do seu diretório atual, execute `cd` para verificar.
 
-1. In VS Code, open the **setup.sh** file in **Labfiles/03-document-intelligence/custom**.
+1. No VS Code, abra o arquivo **setup.sh** em **Labfiles/03-document-intelligence/custom**.
 
-1. Review the commands in the script. It will:
-    - Create a storage account in your Azure resource group
-    - Upload files from the *sample-forms* folder to a container
-    - Print a Shared Access Signature (SAS) URI
+1. Revise os comandos no script. Ele irá:
+    - Criar uma conta de armazenamento no seu grupo de recursos do Azure
+    - Fazer upload de arquivos da pasta *sample-forms* para um contêiner
+    - Exibir um URI de Shared Access Signature (SAS)
 
-1. Modify the **subscription_id**, **resource_group**, and **location** variable declarations with the appropriate values for the subscription, resource group, and location name where you deployed the Document Intelligence resource.
+1. Modifique as declarações das variáveis **subscription_id**, **resource_group** e **location** com os valores apropriados para a assinatura, o grupo de recursos e o nome da região onde você implantou o recurso do Document Intelligence.
 
-    > **Important**: For your **location** string, use the code format (e.g., `eastus` for "East US"). You can find this in the **JSON View** of your resource group in the Azure portal.
+    > **Importante**: Para sua string **location**, use o formato de código (por exemplo, `eastus` para "East US"). Você pode encontrar isso na **JSON View** do seu grupo de recursos no Azure portal.
 
-    If the **expiry_date** variable is in the past, update it to a future date, for example `2026-12-31`.
+    Se a variável **expiry_date** estiver no passado, atualize-a para uma data futura, por exemplo `2026-12-31`.
 
-1. Save the file (**CTRL+S**).
-1. To run the setup script, you need a Bash shell. You can use one of the following options, but be sure you're logged in to your Azure account:
-    - **Azure Cloud Shell**: In the [Azure portal](https://portal.azure.com), open a Cloud Shell (Bash), navigate to the folder, and run `./setup.sh`.
-    - **VS Code terminal (with WSL or Git Bash on Windows)**: Run `bash setup.sh`.
+1. Salve o arquivo (**CTRL+S**).
+1. Para executar o script de configuração, você precisa de um shell Bash. Você pode usar uma das seguintes opções, garantindo que esteja conectado à sua conta do Azure:
+    - **Azure Cloud Shell**: No [Azure portal](https://portal.azure.com), abra um Cloud Shell (Bash), navegue até a pasta e execute `./setup.sh`.
+    - **Terminal do VS Code (com WSL ou Git Bash no Windows)**: Execute `bash setup.sh`.
 
-1. When the script completes, review the displayed output.
-1. In the Azure portal, refresh your resource group and verify that the storage account was created. Open the storage account and in **Storage browser**, expand **Blob containers** and select the **sampleforms** container to confirm the files were uploaded.
+1. Quando o script for concluído, revise a saída exibida.
+1. No Azure portal, atualize seu grupo de recursos e verifique se a conta de armazenamento foi criada. Abra a conta de armazenamento e, em **Storage browser**, expanda **Blob containers** e selecione o contêiner **sampleforms** para confirmar se os arquivos foram carregados.
 
-### Train the model in Document Intelligence Studio
+### Treinar o modelo no Document Intelligence Studio
 
-Now you'll use the training forms to build a custom extraction model.
+Agora você usará os formulários de treinamento para criar um modelo de extração personalizado.
 
-1. Open a new browser tab and navigate to the **Document Intelligence Studio** at `https://documentintelligence.ai.azure.com/studio`.
-1. Scroll down to the **Custom models** section and select the **Custom extraction model** tile.
-1. If prompted, sign in with your Azure credentials.
-1. If asked which Azure Document Intelligence resource to use, select the subscription and resource name you used when you created the resource.
-1. Under **My Projects**, create a new project with the following configuration:
+1. Abra uma nova guia do navegador e acesse o **Document Intelligence Studio** em `https://documentintelligence.ai.azure.com/studio`.
+1. Role até a seção **Custom models** e selecione o bloco **Custom extraction model**.
+1. Se solicitado, entre com suas credenciais do Azure.
+1. Se for perguntado qual recurso do Azure Document Intelligence usar, selecione a assinatura e o nome do recurso que você usou ao criar o recurso.
+1. Em **My Projects**, crie um novo projeto com a seguinte configuração:
 
     - **Enter project details**:
-        - **Project name**: *A valid name for your project*
+        - **Project name**: Um nome válido para seu projeto
     - **Configure service resource**:
-        - **Subscription**: *Your Azure subscription*
-        - **Resource group**: *The resource group of your Document Intelligence resource*
-        - **Document Intelligence resource**: *Your Document Intelligence resource* (select the *Set as default* option and use the default API version)
+        - **Subscription**: Sua assinatura do Azure
+        - **Resource group**: O grupo de recursos do seu recurso do Document Intelligence
+        - **Document Intelligence resource**: Seu recurso do Document Intelligence (selecione a opção *Set as default* e use a versão de API padrão)
     - **Connect training data source**:
-        - **Subscription**: *Your Azure subscription*
-        - **Resource group**: *Your resource group*
-        - **Storage account**: *The storage account created by the setup script* (select the *Set as default* option, select the `sampleforms` blob container, and leave the folder path blank)
+        - **Subscription**: Sua assinatura do Azure
+        - **Resource group**: Seu grupo de recursos
+        - **Storage account**: A conta de armazenamento criada pelo script de configuração (selecione a opção *Set as default*, selecione o contêiner de blob `sampleforms` e deixe o caminho da pasta em branco)
 
-1. When your project is created, on the top right of the page, select **Train** to train your model. Use the following configuration:
-    - **Model ID**: *A valid name for your model — note it down for later*
+1. Quando seu projeto for criado, no canto superior direito da página, selecione **Train** para treinar seu modelo. Use a seguinte configuração:
+    - **Model ID**: Um nome válido para seu modelo — anote-o para uso posterior
     - **Build Mode**: Template
-1. Select **Go to Models**.
-1. Training may take some time. Wait until the model status shows **succeeded**.
+1. Selecione **Go to Models**.
+1. O treinamento pode levar algum tempo. Aguarde até que o status do modelo seja **succeeded**.
 
-### Test the custom model with the Python SDK
+### Testar o modelo personalizado com o Python SDK
 
-1. In the VS Code terminal, navigate to the custom model Python folder:
+1. No terminal do VS Code, navegue até a pasta Python do modelo personalizado:
 
     ```
     cd Python
     ```
 
-1. Install the required packages (create a new virtual environment or reuse the existing one):
+1. Instale os pacotes necessários (crie um novo ambiente virtual ou reutilize o existente):
 
     ```
     python -m venv labenv
@@ -234,28 +234,28 @@ Now you'll use the training forms to build a custom extraction model.
     pip install -r requirements.txt
     ```
 
-1. In VS Code, open the **.env** file in **Labfiles/03-document-intelligence/custom/Python**.
+1. No VS Code, abra o arquivo **.env** em **Labfiles/03-document-intelligence/custom/Python**.
 
-1. Update the file with the following values:
-    - Your Document Intelligence **endpoint**
-    - Your Document Intelligence **key**
-    - The **Model ID** you specified when training your model
-1. Save the file (**CTRL+S**).
-1. In VS Code, open the **test-model.py** file.
+1. Atualize o arquivo com os seguintes valores:
+    - Seu **endpoint** do Document Intelligence
+    - Sua **key** do Document Intelligence
+    - O **Model ID** que você especificou ao treinar seu modelo
+1. Salve o arquivo (**CTRL+S**).
+1. No VS Code, abra o arquivo **test-model.py**.
 
-1. Review the code, which uses the [azure-ai-documentintelligence](https://learn.microsoft.com/python/api/overview/azure/ai-documentintelligence-readme?view=azure-python) SDK. Notice that it references a test image hosted in the GitHub repo. The code creates a `DocumentIntelligenceClient`, submits the image for analysis using your custom model, and prints the extracted fields.
-1. In the VS Code terminal, run the program:
+1. Revise o código, que usa o SDK [azure-ai-documentintelligence](https://learn.microsoft.com/python/api/overview/azure/ai-documentintelligence-readme?view=azure-python). Observe que ele faz referência a uma imagem de teste hospedada no repositório do GitHub. O código cria um `DocumentIntelligenceClient`, envia a imagem para análise usando seu modelo personalizado e imprime os campos extraídos.
+1. No terminal do VS Code, execute o programa:
 
     ```
     python test-model.py
     ```
 
-1. Review the output. The program should display the field names and values extracted from the test form, such as `Merchant`, `CompanyPhoneNumber`, and other fields you defined during training.
+1. Revise a saída. O programa deve exibir os nomes e valores dos campos extraídos do formulário de teste, como `Merchant`, `CompanyPhoneNumber` e outros campos que você definiu durante o treinamento.
 
     ![An image of an invoice used in this project.](./media/Form_1.jpg)
 
-## Clean up
+## Limpar
 
-If you've finished working with the Document Intelligence service, you should delete the resources you created in this exercise to avoid incurring unnecessary Azure costs.
+Se você concluiu o uso do serviço Document Intelligence, deve excluir os recursos que criou neste exercício para evitar custos desnecessários no Azure.
 
-1. In the [Azure portal](https://portal.azure.com), delete the resource group you created for this exercise.
+1. No [Azure portal](https://portal.azure.com), exclua o grupo de recursos que você criou para este exercício.

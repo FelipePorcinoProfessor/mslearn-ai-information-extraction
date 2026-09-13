@@ -1,7 +1,7 @@
 ---
 lab:
-  title: Develop a Content Understanding client application
-  description: Use the Azure Content Understanding Python SDK to create and use analyzers programmatically.
+  title: Desenvolver um aplicativo cliente do Content Understanding
+  description: Use o Azure Content Understanding Python SDK para criar e usar analisadores programaticamente.
   duration: 30
   level: 300
   islab: true
@@ -11,23 +11,23 @@ lab:
     - Azure Content Understanding
 ---
 
-# Develop a Content Understanding client application
+# Desenvolver um aplicativo cliente do Content Understanding
 
-In this exercise, you use the Azure Content Understanding Python SDK to create an analyzer that extracts information from business cards. You'll then develop a client application that uses the analyzer to extract contact details from scanned business cards.
+Neste exercício, você usará o Azure Content Understanding Python SDK para criar um analisador que extrai informações de cartões de visita. Em seguida, você desenvolverá um aplicativo cliente que usa o analisador para extrair detalhes de contato de cartões de visita digitalizados.
 
-This exercise takes approximately **30** minutes.
+Este exercício leva aproximadamente 30 minutos.
 
-## Create a Microsoft Foundry resource and project
+## Criar um recurso e um projeto do Microsoft Foundry
 
-The features we're going to use in this exercise require a Microsoft Foundry resource and project.
+Os recursos que vamos usar neste exercício exigem um recurso e um projeto do Microsoft Foundry.
 
-1. In a web browser, open the [Microsoft Foundry portal](https://ai.azure.com) at `https://ai.azure.com` and sign in using your Azure credentials. Close any tips or quick start panes that are opened the first time you sign in.
-1. Make sure the **New Foundry** toggle is on so that you're using **Foundry (new)**.
-1. Select the project name in the upper-left corner, and then select **Create new project**.
-1. Give your project a name and expand **Advanced options** to specify the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *Create or select a resource group*
-    - **Location**: Choose one of the following supported regions:\*
+1. Em um navegador da web, abra o [portal do Microsoft Foundry](https://ai.azure.com) em `https://ai.azure.com` e entre usando suas credenciais do Azure. Feche quaisquer dicas ou painéis de início rápido que sejam abertos na primeira vez que você entrar.
+1. Verifique se a alternância **New Foundry** está ativada para que você esteja usando o **Foundry (new)**.
+1. Selecione o nome do projeto no canto superior esquerdo e, em seguida, selecione **Create new project**.
+1. Dê um nome ao seu projeto e expanda **Advanced options** para especificar as seguintes configurações:
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *Crie ou selecione um grupo de recursos*
+    - **Location**: Escolha uma das seguintes regiões compatíveis:\*
         - Australia East
         - East US
         - East US 2
@@ -41,46 +41,46 @@ The features we're going to use in this exercise require a Microsoft Foundry res
         - West US
         - West US 3
 
-    > \*Azure Content Understanding is available in selected regions. See the [region support documentation](https://learn.microsoft.com/azure/ai-services/content-understanding/language-region-support) for the latest availability.
+    > \*O Azure Content Understanding está disponível em regiões selecionadas. Consulte a [documentação de suporte por região](https://learn.microsoft.com/azure/ai-services/content-understanding/language-region-support) para saber a disponibilidade mais recente.
 
-1. Select **Create** and wait for your project to be created. This will create a project and the parent resource.
-1. Once created, select the project name at the top of the page, and select **Project details**. On that page, follow the link to the parent resource. Leave this browser tab open.
+1. Selecione **Create** e aguarde a criação do seu projeto. Isso criará um projeto e o recurso pai.
+1. Depois de criado, selecione o nome do projeto na parte superior da página e selecione **Project details**. Nessa página, siga o link para o recurso pai. Deixe essa guia do navegador aberta.
 
-## Configure Content Understanding models and connection
+## Configurar modelos e conexão do Content Understanding
 
 
 
-Connect foundry thought CU portal
+Conectar o Foundry por meio do portal do Content Understanding
 
-Content Understanding uses OpenAI models for analysis that are deployed in your project. You need to deploy these models before using analyzers, and set up the connection between Content Understanding and your Foundry resource. The easiest way is through the Content Understanding Studio.
+O Content Understanding usa modelos OpenAI para análise que são implantados em seu projeto. Você precisa implantar esses modelos antes de usar analisadores e configurar a conexão entre o Content Understanding e seu recurso do Foundry. A maneira mais fácil é por meio do Content Understanding Studio.
 
-1. In a new tab, navigate to [Content Understanding Studio](https://contentunderstanding.ai.azure.com/home) at `https://contentunderstanding.ai.azure.com/home` and sign in with your credentials.
-1. Select the settings gear icon on the top navigation bar, and select **+ Add resource**.
-1. Select your subscription and resource group where you created your Foundry resource, then select your Foundry resource name from the dropdown. This resource is the parent resource to the project you previously created.
-1. Ensure the **Enable auto-deployment** box is checked, then select **Next** and **Save** to create the configuration.
-1. Wait while it deploys the required models for Content Understanding.
+1. Em uma nova guia, navegue para o [Content Understanding Studio](https://contentunderstanding.ai.azure.com/home) em `https://contentunderstanding.ai.azure.com/home` e entre com suas credenciais.
+1. Selecione o ícone de engrenagem de configurações na barra de navegação superior e selecione **+ Add resource**.
+1. Selecione sua assinatura e o grupo de recursos onde você criou seu recurso do Foundry e, em seguida, selecione o nome do recurso do Foundry no menu. Esse recurso é o recurso pai do projeto que você criou anteriormente.
+1. Verifique se a caixa **Enable auto-deployment** está marcada e selecione **Next** e **Save** para criar a configuração.
+1. Aguarde enquanto os modelos necessários para o Content Understanding são implantados.
 
-## Prepare the development environment
+## Preparar o ambiente de desenvolvimento
 
-You'll use Visual Studio Code as your development environment.
+Você usará o Visual Studio Code como seu ambiente de desenvolvimento.
 
-1. Start **Visual Studio Code**.
-1. Open the Command Palette (press **Ctrl+Shift+P**), type **Git: Clone**, and select it.
-1. In the URL bar, paste the following repository URL and press **Enter**:
+1. Inicie o **Visual Studio Code**.
+1. Abra a Paleta de Comandos (pressione **Ctrl+Shift+P**), digite **Git: Clone** e selecione a opção.
+1. Na barra de URL, cole o seguinte URL do repositório e pressione **Enter**:
 
     ```
     https://github.com/microsoftlearning/mslearn-ai-information-extraction
     ```
 
-1. Choose a local folder to clone into, and then when prompted, select **Open** to open the cloned repository in VS Code.
-1. In the VS Code Explorer pane, navigate to **Labfiles/02-content-understanding-api**. The folder contains two scanned business card images as well as the Python code files you need to build your app.
-1. Open a new terminal and navigate to the app folder:
+1. Escolha uma pasta local para clonar e, quando solicitado, selecione **Open** para abrir o repositório clonado no VS Code.
+1. No painel do Explorador do VS Code, navegue até **Labfiles/02-content-understanding-api**. A pasta contém duas imagens de cartões de visita digitalizados, bem como os arquivos de código Python necessários para criar seu aplicativo.
+1. Abra um novo terminal e navegue até a pasta do aplicativo:
 
     ```
    cd Labfiles/02-content-understanding-api
     ```
 
-1. Install the required libraries:
+1. Instale as bibliotecas necessárias:
 
     ```
    python -m venv labenv
@@ -88,28 +88,28 @@ You'll use Visual Studio Code as your development environment.
    pip install -r requirements.txt azure-ai-contentunderstanding
     ```
 
-1. In the VS Code Explorer pane, open the **.env** file in the **Labfiles/02-content-understanding-api** folder.
-1. In the file, replace the **YOUR_ENDPOINT** and **YOUR_KEY** placeholders with your Microsoft Foundry resource endpoint and API key (copied from the portal tab you left open), and ensure that **ANALYZER_NAME** is set to `businesscardanalyzer`.
+1. No painel do Explorador do VS Code, abra o arquivo **.env** na pasta **Labfiles/02-content-understanding-api**.
+1. No arquivo, substitua os placeholders **YOUR_ENDPOINT** e **YOUR_KEY** pelo endpoint e pela chave de API do seu recurso do Microsoft Foundry (copiados da guia do portal que você deixou aberta) e verifique se **ANALYZER_NAME** está definido como `businesscardanalyzer`.
 
-    > **Tip**: You can also find the endpoint and keys in the [Azure portal](https://portal.azure.com) by navigating to your Microsoft Foundry resource and viewing **Resource Management** > **Keys and Endpoint**.
+    > Dica: você também pode encontrar o endpoint e as chaves no [portal do Azure](https://portal.azure.com) navegando até o seu recurso do Microsoft Foundry e visualizando **Resource Management** > **Keys and Endpoint**.
 
-1. Save the file (**CTRL+S**).
+1. Salve o arquivo (**CTRL+S**).
 
-## Create an analyzer with the Python SDK
+## Criar um analisador com o Python SDK
 
-Now you'll use the Content Understanding Python SDK to create an analyzer that can extract information from images of business cards.
+Agora você usará o Content Understanding Python SDK para criar um analisador que pode extrair informações de imagens de cartões de visita.
 
-1. In the VS Code Explorer pane, open the **biz-card.json** file and review its contents. This JSON defines an analyzer schema for a business card, specifying the fields to extract (Company, Name, Title, Email, Phone).
+1. No painel do Explorador do VS Code, abra o arquivo **biz-card.json** e revise seu conteúdo. Esse JSON define um esquema de analisador para um cartão de visita, especificando os campos a serem extraídos (Company, Name, Title, Email, Phone).
 
-1. Open the **create-analyzer.py** file in VS Code.
+1. Abra o arquivo **create-analyzer.py** no VS Code.
 
-1. Review the code, which:
-    - Imports the `ContentUnderstandingClient` and `AzureKeyCredential` from the [Azure Content Understanding SDK](https://learn.microsoft.com/python/api/overview/azure/ai-contentunderstanding-readme?view=azure-python-preview).
-    - Loads the analyzer schema from the **biz-card.json** file.
-    - Retrieves the endpoint, key, and analyzer name from the environment configuration file.
-    - Calls a function named **create_analyzer**, which is currently not implemented.
+1. Revise o código, que:
+    - Importa `ContentUnderstandingClient` e `AzureKeyCredential` do [Azure Content Understanding SDK](https://learn.microsoft.com/python/api/overview/azure/ai-contentunderstanding-readme?view=azure-python-preview).
+    - Carrega o esquema do analisador do arquivo **biz-card.json**.
+    - Recupera o endpoint, a chave e o nome do analisador do arquivo de configuração de ambiente.
+    - Chama uma função chamada **create_analyzer**, que atualmente não está implementada.
 
-1. In the **create_analyzer** function, find the comment **Create a Content Understanding analyzer** and add the following code (being careful to maintain the correct indentation):
+1. Na função **create_analyzer**, localize o comentário **Create a Content Understanding analyzer** e adicione o seguinte código (tendo cuidado para manter a indentação correta):
 
     ```python
     # Create a Content Understanding analyzer
@@ -137,36 +137,36 @@ Now you'll use the Content Understanding Python SDK to create an analyzer that c
     print(f"Status: {result['status'] if isinstance(result, dict) else 'Succeeded'}")
     ```
 
-1. Review the code you added, which:
-    - Creates a `ContentUnderstandingClient` instance with the endpoint and API key.
-    - Parses the analyzer schema JSON.
-    - Uses `begin_create_analyzer` to start the long-running operation to create the analyzer.
-    - Calls `.result()` to wait for the operation to complete.
+1. Revise o código que você adicionou, que:
+    - Cria uma instância de `ContentUnderstandingClient` com o endpoint e a chave de API.
+    - Analisa o JSON do esquema do analisador.
+    - Usa `begin_create_analyzer` para iniciar a operação de longa duração para criar o analisador.
+    - Chama `.result()` para aguardar a conclusão da operação.
 
-    > **Note**: The SDK handles polling automatically through the `LROPoller` pattern — no manual polling is needed!
+    > Observação: o SDK gerencia a sondagem automaticamente por meio do padrão `LROPoller` — nenhuma sondagem manual é necessária!
 
-1. Save the file (**CTRL+S**).
-1. In the VS Code terminal (make sure the virtual environment is still activated and you're in the **Labfiles/02-content-understanding-api** folder), run the Python code:
+1. Salve o arquivo (**CTRL+S**).
+1. No terminal do VS Code (verifique se o ambiente virtual ainda está ativado e se você está na pasta **Labfiles/02-content-understanding-api**), execute o código Python:
 
     ```
     python create-analyzer.py
     ```
 
-1. Review the output from the program, which should indicate that the analyzer has been created.
+1. Revise a saída do programa, que deve indicar que o analisador foi criado.
 
-## Analyze content using the Python SDK
+## Analisar conteúdo usando o Python SDK
 
-Now that you've created an analyzer, you can consume it from a client application through the Content Understanding Python SDK.
+Agora que você criou um analisador, pode consumi-lo a partir de um aplicativo cliente por meio do Content Understanding Python SDK.
 
-1. In VS Code, open the **read-card.py** file.
+1. No VS Code, abra o arquivo **read-card.py**.
 
-1. Review the code, which:
-    - Imports the `ContentUnderstandingClient` and `AzureKeyCredential` from the SDK.
-    - Identifies the image file to be analyzed, with a default of **biz-card-1.png**.
-    - Retrieves the endpoint and key from the environment configuration file.
-    - Calls a function named **analyze_card**, which is currently not implemented.
+1. Revise o código, que:
+    - Importa `ContentUnderstandingClient` e `AzureKeyCredential` do SDK.
+    - Identifica o arquivo de imagem a ser analisado, com padrão de **biz-card-1.png**.
+    - Recupera o endpoint e a chave do arquivo de configuração de ambiente.
+    - Chama uma função chamada **analyze_card**, que atualmente não está implementada.
 
-1. In the **analyze_card** function, find the comment **Use Content Understanding to analyze the image** and add the following code (being careful to maintain the correct indentation):
+1. Na função **analyze_card**, localize o comentário **Use Content Understanding to analyze the image** e adicione o seguinte código (tendo cuidado para manter a indentação correta):
 
     ```python
     # Use Content Understanding to analyze the image
@@ -207,42 +207,42 @@ Now that you've created an analyzer, you can consume it from a client applicatio
                 print(f"{field_name}: {value}")
     ```
 
-1. Review the code you added, which:
-    - Creates a `ContentUnderstandingClient` instance.
-    - Reads the content of the image file as bytes.
-    - Calls `begin_analyze_binary` to submit the image to the analyzer (the SDK handles the asynchronous polling automatically).
-    - Calls `.result()` to wait for and retrieve the analysis results.
-    - Saves the JSON response and parses the extracted fields.
+1. Revise o código que você adicionou, que:
+    - Cria uma instância de `ContentUnderstandingClient`.
+    - Lê o conteúdo do arquivo de imagem como bytes.
+    - Chama `begin_analyze_binary` para enviar a imagem ao analisador (o SDK gerencia a sondagem assíncrona automaticamente).
+    - Chama `.result()` para aguardar e recuperar os resultados da análise.
+    - Salva a resposta JSON e analisa os campos extraídos.
 
-1. Save the file (**CTRL+S**).
-1. In the VS Code terminal, run the Python code:
+1. Salve o arquivo (**CTRL+S**).
+1. No terminal do VS Code, execute o código Python:
 
     ```
     python read-card.py biz-card-1.png
     ```
 
-1. Review the output from the program, which should show the values for the fields in the following business card:
+1. Revise a saída do programa, que deve mostrar os valores dos campos no seguinte cartão de visita:
 
-    ![A business card for Roberto Tamburello, an Adventure Works Cycles employee.](./media/biz-card-1.png)
+    ![Um cartão de visita de Roberto Tamburello, um funcionário da Adventure Works Cycles.](./media/biz-card-1.png)
 
-1. Run the program again with a different business card:
+1. Execute o programa novamente com um cartão de visita diferente:
 
     ```
     python read-card.py biz-card-2.png
     ```
 
-1. Review the results, which should reflect the values in this business card:
+1. Revise os resultados, que devem refletir os valores deste cartão de visita:
 
-    ![A business card for Mary Duartes, a Contoso employee.](./media/biz-card-2.png)
+    ![Um cartão de visita de Mary Duartes, uma funcionária da Contoso.](./media/biz-card-2.png)
 
-1. To view the full JSON response that was returned, open the **results.json** file in VS Code, or run the following command in the terminal:
+1. Para ver a resposta JSON completa que foi retornada, abra o arquivo **results.json** no VS Code ou execute o seguinte comando no terminal:
 
     ```
     cat results.json
     ```
 
-## Clean up
+## Limpar
 
-If you've finished working with the Content Understanding service, you should delete the resources you have created in this exercise to avoid incurring unnecessary Azure costs.
+Se você terminou de trabalhar com o serviço Content Understanding, deve excluir os recursos criados neste exercício para evitar incorrer em custos desnecessários do Azure.
 
-1. In the [Azure portal](https://portal.azure.com), delete the resource group you created for this exercise.
+1. No [portal do Azure](https://portal.azure.com), exclua o grupo de recursos que você criou para este exercício.

@@ -1,7 +1,7 @@
 ---
 lab:
-  title: Create a knowledge mining solution
-  description: Use Azure AI Search to extract key information from documents and make it easier to search and analyze.
+  title: Criar uma solução de mineração de conhecimento
+  description: Use o Azure AI Search para extrair informações importantes de documentos e facilitar a pesquisa e a análise.
   duration: 40
   level: 200
   islab: true
@@ -10,77 +10,77 @@ lab:
     - Azure
 ---
 
-# Create a knowledge mining solution
+# Criar uma solução de mineração de conhecimento
 
-In this exercise, you use Azure AI Search to create a knowledge mining solution that indexes a set of travel brochure documents. The indexing process uses AI skills to extract key information from the documents, and you'll create a Python client application to search the index.
+Neste exercício, você usará o Azure AI Search para criar uma solução de mineração de conhecimento que indexa um conjunto de documentos de folhetos de viagem. O processo de indexação usa habilidades de IA para extrair informações importantes dos documentos, e você criará um aplicativo cliente em Python para pesquisar no índice.
 
-This exercise takes approximately **40** minutes.
+Este exercício leva aproximadamente **40** minutos.
 
-## Create Azure resources
+## Criar recursos do Azure
 
-The solution requires multiple resources in your Azure subscription, all created in the same region.
+A solução requer vários recursos na sua assinatura do Azure, todos criados na mesma região.
 
-### Create an Azure AI Search resource
+### Criar um recurso do Azure AI Search
 
-1. In a web browser, open the [Azure portal](https://portal.azure.com) at `https://portal.azure.com` and sign in with your Azure credentials.
-1. Select the **&#65291;Create a resource** button, search for `Azure AI Search`, and create an **Azure AI Search** resource with the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *Create or select a resource group*
-    - **Service name**: *A valid name for your search resource*
-    - **Location**: *Any available location*
+1. Em um navegador da Web, abra o [Azure portal](https://portal.azure.com) em `https://portal.azure.com` e entre com suas credenciais do Azure.
+1. Selecione o botão **&#65291;Create a resource**, pesquise por `Azure AI Search` e crie um recurso **Azure AI Search** com as seguintes configurações:
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *Crie ou selecione um grupo de recursos*
+    - **Service name**: *Um nome válido para o seu recurso de pesquisa*
+    - **Location**: *Qualquer localização disponível*
     - **Pricing tier**: Free
-1. Wait for deployment to complete, and then go to the deployed resource.
-1. Review the **Overview** page. Here you can use a visual interface to create, test, manage, and monitor the various components of a search solution.
+1. Aguarde a conclusão da implantação e vá para o recurso implantado.
+1. Revise a página **Overview**. Aqui você pode usar uma interface visual para criar, testar, gerenciar e monitorar os vários componentes de uma solução de pesquisa.
 
-### Create a storage account
+### Criar uma conta de armazenamento
 
-1. Return to the Azure portal home page and create a **Storage account** resource with the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *The same resource group as your Azure AI Search resource*
-    - **Storage account name**: *A valid name for your storage resource*
-    - **Region**: *The same region as your Azure AI Search resource*
+1. Volte para a página inicial do Azure portal e crie um recurso **Storage account** com as seguintes configurações:
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *O mesmo grupo de recursos do seu recurso Azure AI Search*
+    - **Storage account name**: *Um nome válido para o seu recurso de armazenamento*
+    - **Region**: *A mesma região do seu recurso Azure AI Search*
     - **Primary service**: Azure Blob Storage or Azure Data Lake Storage Gen 2
     - **Performance**: Standard
     - **Redundancy**: Locally-redundant storage (LRS)
-1. Wait for deployment to complete, and then go to the deployed resource.
+1. Aguarde a conclusão da implantação e vá para o recurso implantado.
 
-## Upload documents to Azure Storage
+## Carregar documentos no Azure Storage
 
-Your knowledge mining solution will extract information from travel brochure documents stored in Azure Blob Storage.
+Sua solução de mineração de conhecimento extrairá informações de documentos de folhetos de viagem armazenados no Azure Blob Storage.
 
-1. In a new browser tab, download [documents.zip](https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip) from `https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip` and save it to a local folder.
-1. Extract the downloaded *documents.zip* file and view the travel brochure files it contains.
-1. In the Azure portal, navigate to your storage account and select **Storage browser** in the navigation pane.
-1. In the storage browser, select **Blob containers**.
-1. In the toolbar, select **+ Container** and create a new container with the following settings:
+1. Em uma nova guia do navegador, baixe [documents.zip](https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip) de `https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip` e salve-o em uma pasta local.
+1. Extraia o arquivo *documents.zip* baixado e veja os arquivos de folhetos de viagem que ele contém.
+1. No Azure portal, navegue até sua conta de armazenamento e selecione **Storage browser** no painel de navegação.
+1. No Storage browser, selecione **Blob containers**.
+1. Na barra de ferramentas, selecione **+ Container** e crie um novo contêiner com as seguintes configurações:
     - **Name**: `documents`
     - **Anonymous access level**: Private (no anonymous access)
-1. Select the **documents** container, and use the **Upload** toolbar button to upload the .pdf files you extracted from **documents.zip**.
+1. Selecione o contêiner **documents** e use o botão da barra de ferramentas **Upload** para enviar os arquivos .pdf que você extraiu de **documents.zip**.
 
-## Create and run an indexer
+## Criar e executar um indexador
 
-Now that you have the documents in place, you can create an indexer to use AI skills to extract information from them.
+Agora que os documentos estão no lugar, você pode criar um indexador para usar habilidades de IA e extrair informações deles.
 
-1. In the Azure portal, browse to your Azure AI Search resource. On its **Overview** page, select **Import data**.
-1. On the **Connect to your data** page, in the **Data Source** list, select **Azure Blob Storage**.
-1. Select **keyword search**. Then complete the data store details with the following values:
+1. No Azure portal, navegue até seu recurso Azure AI Search. Na página **Overview**, selecione **Import data**.
+1. Na página **Connect to your data**, na lista **Data Source**, selecione **Azure Blob Storage**.
+1. Selecione **keyword search**. Em seguida, preencha os detalhes do repositório de dados com os seguintes valores:
 
-1. On **Connect to your data** form set the following:
-    - **Storage account**: *Your recently created storage account*
-    - **Blob container**: Select the **documents** container.
-    - Leave the remaining options as their default values, and then select **Next**.
+1. Em **Connect to your data**, defina o seguinte:
+    - **Storage account**: *Sua conta de armazenamento criada recentemente*
+    - **Blob container**: Selecione o contêiner **documents**.
+    - Deixe as demais opções com seus valores padrão e selecione **Next**.
 
-1. On **Apply AI enrichments** set the following:
-    - Select **Extract phrases**.
-    - Select **Extract entities**, select the settings icon, ensure only **Persons** and **Locations** are selected, and then select **Save**.
-    - Select **Extract text from images**, select the settings icon, ensure **Generate tags** and **Categorize content** are selected, and then select **Save**.
-    - If it isn't already selected, choose the free Foundry Tools resource option, and then select **Next**.
+1. Em **Apply AI enrichments**, defina o seguinte:
+    - Selecione **Extract phrases**.
+    - Selecione **Extract entities**, selecione o ícone de configurações, verifique se apenas **Persons** e **Locations** estão selecionados e selecione **Save**.
+    - Selecione **Extract text from images**, selecione o ícone de configurações, verifique se **Generate tags** e **Categorize content** estão selecionados e selecione **Save**.
+    - Se ainda não estiver selecionada, escolha a opção gratuita de recurso Foundry Tools e selecione **Next**.
 
-    > **Note**: The free Azure AI Services enrichment for Azure AI Search can be used to index a maximum of 20 documents. In a production solution, you should create and attach an Azure AI Services resource.
+    > Observação: o enriquecimento gratuito do Azure AI Services para o Azure AI Search pode ser usado para indexar no máximo 20 documentos. Em uma solução de produção, você deve criar e anexar um recurso do Azure AI Services.
 
-1. On **Preview mappings** set the following configuration:
-    - The fields are already mapped based on the options you selected in the previous step.
-    - Review the following fields and ensure that they're configured as shown in the following table. To update a field, select it and then select **Configure field**. Leave all other fields with their default settings.
+1. Em **Preview mappings**, defina a seguinte configuração:
+    - Os campos já estão mapeados com base nas opções selecionadas na etapa anterior.
+    - Revise os seguintes campos e verifique se estão configurados conforme mostrado na tabela a seguir. Para atualizar um campo, selecione-o e, em seguida, selecione **Configure field**. Deixe todos os outros campos com as configurações padrão.
 
     | Target index field name | Retrievable | Filterable | Sortable | Facetable | Searchable |
     | ---------- | ----------- | ---------- | -------- | --------- | ---------- |
@@ -91,28 +91,28 @@ Now that you have the documents in place, you can create an indexer to use AI sk
     | persons | &#10004; | &#10004; | | | &#10004; |
     | keyPhrases | &#10004; | &#10004; | | | &#10004; |
 
-    - Double-check your selections carefully.
-    - Select **Next**.
+    - Verifique suas seleções com atenção.
+    - Selecione **Next**.
 
-1. On **Advanced settings** set the following:
-    - Ensure **Enable semantic ranker** is selected.
-    - If it isn't already selected, set **Schedule** to **Once**.
-    - Select **Next**.
+1. Em **Advanced settings**, defina o seguinte:
+    - Verifique se **Enable semantic ranker** está selecionado.
+    - Se ainda não estiver selecionado, defina **Schedule** como **Once**.
+    - Selecione **Next**.
 
-1. On **Review and create** set **Objects name prefix** to `margies-index` and then select **Create**.
-1. You may close the success notification.
-1. In the navigation pane on the left, under **Search management**, view the **Indexers** page. The **margies-index-indexer** should appear. Wait a few minutes, and click **&orarr; Refresh** until the **Status** indicates **Success**.
+1. Em **Review and create**, defina **Objects name prefix** como `margies-index` e selecione **Create**.
+1. Você pode fechar a notificação de sucesso.
+1. No painel de navegação à esquerda, em **Search management**, veja a página **Indexers**. O **margies-index-indexer** deve aparecer. Aguarde alguns minutos e clique em **&orarr; Refresh** até que o **Status** indique **Success**.
 
-## Search the index
+## Pesquisar no índice
 
-Now that you have an index, you can search it.
+Agora que você tem um índice, pode pesquisá-lo.
 
-1. Return to the **Overview** page for your Azure AI Search resource, and on the toolbar, select **Search explorer**.
-1. In Search explorer, in the **Query string** box, enter `*` (a single asterisk) and then select **Search**.
+1. Volte para a página **Overview** do seu recurso Azure AI Search e, na barra de ferramentas, selecione **Search explorer**.
+1. No Search explorer, na caixa **Query string**, insira `*` (um único asterisco) e selecione **Search**.
 
-    This query retrieves all documents in the index in JSON format. Examine the results and note the fields for each document, which include document content, metadata, and enriched data extracted by the cognitive skills.
+    Essa consulta recupera todos os documentos no índice em formato JSON. Examine os resultados e observe os campos de cada documento, que incluem conteúdo do documento, metadados e dados enriquecidos extraídos pelas habilidades cognitivas.
 
-1. In the **View** menu, select **JSON view** and note that the JSON request for the search is shown:
+1. No menu **View**, selecione **JSON view** e observe que a solicitação JSON da pesquisa é mostrada:
 
     ```json
     {
@@ -121,9 +121,9 @@ Now that you have an index, you can search it.
     }
     ```
 
-1. The results include a **@odata.count** field at the top of the results that indicates the number of documents returned by the search.
+1. Os resultados incluem um campo **@odata.count** na parte superior que indica o número de documentos retornados pela pesquisa.
 
-1. Modify the JSON request to include a **select** parameter:
+1. Modifique a solicitação JSON para incluir um parâmetro **select**:
 
     ```json
     {
@@ -133,9 +133,9 @@ Now that you have an index, you can search it.
     }
     ```
 
-        This time the results include only the file name and any locations mentioned in the document content. The file name is in the **title** field. The **locations** field was generated by an AI skill.
+        Desta vez, os resultados incluem apenas o nome do arquivo e quaisquer localizações mencionadas no conteúdo do documento. O nome do arquivo está no campo **title**. O campo **locations** foi gerado por uma habilidade de IA.
 
-1. Try the following query string:
+1. Experimente a seguinte string de consulta:
 
     ```json
     {
@@ -145,9 +145,9 @@ Now that you have an index, you can search it.
     }
     ```
 
-    This search finds documents that mention "New York" in any searchable field, and returns the file name and key phrases.
+    Esta pesquisa encontra documentos que mencionam "New York" em qualquer campo pesquisável e retorna o nome do arquivo e as frases-chave.
 
-1. Try one more query:
+1. Experimente mais uma consulta:
 
     ```json
     {
@@ -158,37 +158,37 @@ Now that you have an index, you can search it.
     }
     ```
 
-    This returns documents mentioning "New York" that are smaller than 380,000 bytes.
+    Isso retorna documentos que mencionam "New York" e que são menores que 380.000 bytes.
 
-## Create a search client application
+## Criar um aplicativo cliente de pesquisa
 
-Now that you have a useful index, you can query it from a Python client application using the Azure AI Search SDK.
+Agora que você tem um índice útil, pode consultá-lo a partir de um aplicativo cliente em Python usando o SDK do Azure AI Search.
 
-### Get the endpoint and keys for your search resource
+### Obter o endpoint e as chaves do seu recurso de pesquisa
 
-1. In the Azure portal, return to the **Overview** page for your Azure AI Search resource. Note the **Url** value (e.g., `https://your_resource_name.search.windows.net`). This is the endpoint for your search resource.
-1. In the navigation pane on the left, expand **Settings** and view the **Keys** page. Note the **query** key — you'll need this for your client application.
+1. No Azure portal, volte para a página **Overview** do seu recurso Azure AI Search. Observe o valor de **Url** (por exemplo, `https://your_resource_name.search.windows.net`). Este é o endpoint do seu recurso de pesquisa.
+1. No painel de navegação à esquerda, expanda **Settings** e veja a página **Keys**. Observe a chave **query** — você precisará dela para seu aplicativo cliente.
 
-    > **Note**: Azure AI Search creates one default query key for the service. In the Azure portal, this default query key can appear with a blank name. This is expected behavior.
+    > Observação: o Azure AI Search cria uma chave de consulta padrão para o serviço. No Azure portal, essa chave de consulta padrão pode aparecer com um nome em branco. Esse é o comportamento esperado.
 
-### Prepare to use the Azure AI Search SDK
+### Preparar o uso do SDK do Azure AI Search
 
-1. Start **Visual Studio Code**.
-1. Open the Command Palette (press **Ctrl+Shift+P**), type **Git: Clone**, and select it.
-1. In the URL bar, paste the following repository URL and press **Enter**:
+1. Inicie o **Visual Studio Code**.
+1. Abra a Command Palette (pressione **Ctrl+Shift+P**), digite **Git: Clone** e selecione a opção.
+1. Na barra de URL, cole o seguinte URL de repositório e pressione **Enter**:
 
     ```
     https://github.com/microsoftlearning/mslearn-ai-information-extraction
     ```
 
-1. Choose a local folder to clone into, and then when prompted, select **Open** to open the cloned repository in VS Code.
-1. Open a new terminal and navigate to the Python code folder:
+1. Escolha uma pasta local para clonar e, quando solicitado, selecione **Open** para abrir o repositório clonado no VS Code.
+1. Abra um novo terminal e navegue até a pasta de código Python:
 
     ```
     cd Labfiles/04-knowledge-mining
     ```
 
-1. Install the required packages:
+1. Instale os pacotes necessários:
 
     ```
     python -m venv labenv
@@ -196,50 +196,50 @@ Now that you have a useful index, you can query it from a Python client applicat
     pip install -r requirements.txt
     ```
 
-    > **Note**: The requirements.txt installs the [azure-search-documents](https://learn.microsoft.com/python/api/overview/azure/search-documents-readme?view=azure-python) Python SDK package and its dependencies.
+    > Observação: o requirements.txt instala o pacote Python SDK [azure-search-documents](https://learn.microsoft.com/python/api/overview/azure/search-documents-readme?view=azure-python) e suas dependências.
 
-1. In the VS Code Explorer pane, open the **.env** file in **Labfiles/04-knowledge-mining**.
+1. No painel Explorer do VS Code, abra o arquivo **.env** em **Labfiles/04-knowledge-mining**.
 
-1. Replace the following placeholder values:
-    - **your_search_endpoint**: *The endpoint for your Azure AI Search resource*
-    - **your_query_key**: *The query key for your Azure AI Search resource*
-    - **your_index_name**: *The name of your index (should be `margies-index`)*
-1. Save the file (**CTRL+S**).
+1. Substitua os seguintes valores de placeholder:
+    - **your_search_endpoint**: *O endpoint do seu recurso Azure AI Search*
+    - **your_query_key**: *A chave de consulta do seu recurso Azure AI Search*
+    - **your_index_name**: *O nome do seu índice (deve ser `margies-index`)*
+1. Salve o arquivo (**CTRL+S**).
 
-1. In VS Code, open the **search-app.py** file.
+1. No VS Code, abra o arquivo **search-app.py**.
 
-1. Review the code, which:
-    - Retrieves the configuration settings from the .env file.
-    - Creates a `SearchClient` with the endpoint, key, and index name.
-    - Prompts the user for a search query in a loop (until they type "quit").
-    - Searches the index using the query, returning the following fields ordered by title:
+1. Revise o código, que:
+    - Recupera as configurações de configuração do arquivo .env.
+    - Cria um `SearchClient` com o endpoint, a chave e o nome do índice.
+    - Solicita ao usuário uma consulta de pesquisa em um loop (até que ele digite "quit").
+    - Pesquisa no índice usando a consulta, retornando os seguintes campos ordenados por título:
         - title
         - locations
         - persons
         - keyPhrases
-    - Parses the search results that are returned to display the fields returned for each document in the result set.
-1. In the VS Code terminal, run the application:
+    - Analisa os resultados da pesquisa retornados para exibir os campos retornados para cada documento no conjunto de resultados.
+1. No terminal do VS Code, execute o aplicativo:
 
     ```
     python search-app.py
     ```
 
-1. When prompted, enter a query such as `London` and view the results.
-1. Try another query, such as `flights`.
-1. When you're finished testing, enter `quit` to close the app.
+1. Quando solicitado, insira uma consulta como `London` e veja os resultados.
+1. Experimente outra consulta, como `flights`.
+1. Quando terminar os testes, insira `quit` para fechar o aplicativo.
 
-## Note about knowledge store
+## Observação sobre o knowledge store
 
-Knowledge store steps are excluded from this version of the exercise.
+As etapas do knowledge store foram excluídas desta versão do exercício.
 
-The current **Import data** keyword search flow in the Azure portal doesn't create a knowledge store for this scenario, and the multimodal alternative hasn't been adopted for this exercise.
+O fluxo atual de pesquisa por palavra-chave de **Import data** no Azure portal não cria um knowledge store para este cenário, e a alternativa multimodal não foi adotada para este exercício.
 
-## Clean up
+## Limpar recursos
 
-If you've finished working with Azure AI Search, you should delete the resources you created in this exercise to avoid incurring unnecessary Azure costs.
+Se você terminou de trabalhar com o Azure AI Search, deve excluir os recursos criados neste exercício para evitar a geração de custos desnecessários no Azure.
 
-1. In the [Azure portal](https://portal.azure.com), delete the resource group you created for this exercise.
+1. No [Azure portal](https://portal.azure.com), exclua o grupo de recursos que você criou para este exercício.
 
-## More information
+## Mais informações
 
-To learn more about Azure AI Search, see the [Azure AI Search documentation](https://docs.microsoft.com/azure/search/search-what-is-azure-search).
+Para saber mais sobre o Azure AI Search, consulte a [documentação do Azure AI Search](https://docs.microsoft.com/azure/search/search-what-is-azure-search).

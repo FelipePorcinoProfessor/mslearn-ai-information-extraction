@@ -1,7 +1,7 @@
 ---
 lab:
-  title: Extract information from multimodal content
-  description: Use Azure Content Understanding to extract insights from documents, images, audio recordings, and videos.
+  title: Extrair informações de conteúdo multimodal
+  description: Usar Azure Content Understanding para extrair insights de documentos, imagens, gravações de áudio e vídeos.
   duration: 40
   level: 200
   islab: true
@@ -11,23 +11,23 @@ lab:
     - Azure Content Understanding
 ---
 
-# Extract information from multimodal content
+# Extrair informações de conteúdo multimodal
 
-In this exercise, you use Azure Content Understanding to extract information from a variety of content types; including an invoice, an image of a slide containing charts, an audio recording of a voice message, and a video recording of a conference call.
+Neste exercício, você usará Azure Content Understanding para extrair informações de diversos tipos de conteúdo; incluindo uma fatura, uma imagem de um slide contendo gráficos, uma gravação de áudio de uma mensagem de voz e uma gravação de vídeo de uma chamada de conferência.
 
-This exercise takes approximately **40** minutes.
+Este exercício leva aproximadamente **40** minutos.
 
-## Create a Microsoft Foundry resource and project
+## Criar um recurso e projeto do Microsoft Foundry
 
-The features we're going to use in this exercise require a Microsoft Foundry resource and project.
+Os recursos que vamos usar neste exercício exigem um recurso e projeto do Microsoft Foundry.
 
-1. In a web browser, open the [Microsoft Foundry portal](https://ai.azure.com) at `https://ai.azure.com` and sign in using your Azure credentials. Close any tips or quick start panes that are opened the first time you sign in.
-1. Make sure the **New Foundry** toggle is on so that you're using **Foundry (new)**.
-1. If you aren't prompted to create a new project automatically, select the project name in the upper-left corner, and then select **Create new project**.
-1. Give your project a name and expand **Advanced options** to specify the following settings:
-    - **Project name**: *Provide a valid name for your project*
-    - **Foundry resource**: *Use the default*
-    - **Region**: Choose one of the following supported regions:\*
+1. Em um navegador da Web, abra o [portal do Microsoft Foundry](https://ai.azure.com) em `https://ai.azure.com` e entre com suas credenciais do Azure. Feche quaisquer dicas ou painéis de início rápido que forem abertos na primeira vez em que você entrar.
+1. Verifique se a alternância **New Foundry** está ativada para que você esteja usando o **Foundry (new)**.
+1. Se você não for solicitado a criar um novo projeto automaticamente, selecione o nome do projeto no canto superior esquerdo e selecione **Create new project**.
+1. Dê um nome ao seu projeto e expanda **Advanced options** para especificar as seguintes configurações:
+    - **Project name**: *Forneça um nome válido para seu projeto*
+    - **Foundry resource**: *Use o padrão*
+    - **Region**: Escolha uma das seguintes regiões com suporte:\*
         - Australia East
         - East US
         - East US 2
@@ -40,226 +40,226 @@ The features we're going to use in this exercise require a Microsoft Foundry res
         - West Europe
         - West US
         - West US 3
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *Create or select a resource group*
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *Crie ou selecione um grupo de recursos*
     
 
-    > \*Azure Content Understanding is available in selected regions. See the [region support documentation](https://learn.microsoft.com/azure/ai-services/content-understanding/language-region-support) for the latest availability.
+    > \*Azure Content Understanding está disponível em regiões selecionadas. Consulte a [documentação de suporte por região](https://learn.microsoft.com/azure/ai-services/content-understanding/language-region-support) para ver a disponibilidade mais recente.
 
-1. Select **Create** and wait for your project to be created.
+1. Selecione **Create** e aguarde a criação do projeto.
 
-## Download content
+## Baixar conteúdo
 
-The content you're going to analyze is in a .zip archive. Download it and extract it in a local folder.
+O conteúdo que você vai analisar está em um arquivo .zip. Baixe-o e extraia-o em uma pasta local.
 
-1. In a new browser tab, download [content.zip](https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/content/content.zip) from `https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/content/content.zip` and save it in a local folder.
-1. Extract the downloaded *content.zip* file and view the files it contains. You'll use these files to explore Content Understanding analyzers in this exercise.
+1. Em uma nova guia do navegador, baixe o [content.zip](https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/content/content.zip) em `https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/content/content.zip` e salve-o em uma pasta local.
+1. Extraia o arquivo *content.zip* baixado e veja os arquivos que ele contém. Você usará esses arquivos para explorar os analisadores do Content Understanding neste exercício.
 
-> **Note**: If you're only interested in exploring analysis of a specific modality (documents, images, video, or audio), you can skip to the relevant task below. For the best experience, go through each task to learn how to extract information from different types of content.
+> Observação: Se você estiver interessado apenas em explorar a análise de uma modalidade específica (documentos, imagens, vídeo ou áudio), poderá pular para a tarefa relevante abaixo. Para a melhor experiência, percorra cada tarefa para aprender a extrair informações de diferentes tipos de conteúdo.
 
-## Try prebuilt analyzers in Microsoft Foundry
+## Experimentar analisadores predefinidos no Microsoft Foundry
 
-Azure Content Understanding includes prebuilt **Read** and **Layout** analyzers that can extract text and structural elements from documents without requiring any custom configuration. These prebuilt analyzers are available directly in the Foundry (new) portal as AI Services models.
+Azure Content Understanding inclui os analisadores predefinidos **Read** e **Layout** que podem extrair texto e elementos estruturais de documentos sem exigir qualquer configuração personalizada. Esses analisadores predefinidos estão disponíveis diretamente no portal Foundry (new) como modelos de AI Services.
 
-### Use the Layout analyzer in the playground
+### Usar o analisador Layout no playground
 
-1. In the [Microsoft Foundry portal](https://ai.azure.com), make sure the **New Foundry** toggle is on.
-1. Select **Build** in the upper-right menu, then select **Deployments** in the left pane.
-1. Select the **AI Services** tab to view the prebuilt models provided by Foundry Tools.
-1. Find and select **Azure Content Understanding - Layout**.
+1. No [portal do Microsoft Foundry](https://ai.azure.com), verifique se a alternância **New Foundry** está ativada.
+1. Selecione **Build** no menu superior direito e, em seguida, selecione **Deployments** no painel esquerdo.
+1. Selecione a guia **AI Services** para ver os modelos predefinidos fornecidos pelo Foundry Tools.
+1. Localize e selecione **Azure Content Understanding - Layout**.
 
-    This opens the Layout analyzer playground page, where you can test the layout model on sample data or your own files.
+    Isso abre a página do playground do analisador Layout, onde você pode testar o modelo de layout em dados de exemplo ou em seus próprios arquivos.
 
-1. In the playground, use the option to upload your own data and upload the **invoice-1234.pdf** file from the folder where you extracted content files. This file contains the following invoice:
+1. No playground, use a opção para fazer upload dos seus próprios dados e carregue o arquivo **invoice-1234.pdf** da pasta onde você extraiu os arquivos de conteúdo. Este arquivo contém a seguinte fatura:
 
-    ![Image of an invoice number 1234.](./media/invoice-1234.png)
+    ![Imagem de uma fatura número 1234.](./media/invoice-1234.png)
 
-1. Run the analyzer and wait for analysis to complete.
-1. Review the results. You can view the extracted content either as formatted output or as raw JSON data. Notice that the Layout analyzer extracts text, tables, and structural elements such as paragraphs and sections from the document.
+1. Execute o analisador e aguarde a conclusão da análise.
+1. Revise os resultados. Você pode ver o conteúdo extraído como saída formatada ou como dados JSON sem formatação. Observe que o analisador Layout extrai texto, tabelas e elementos estruturais, como parágrafos e seções do documento.
 
-    > **Note**: The prebuilt **Read** and **Layout** analyzers extract content from documents without requiring a generative AI model. **Read** extracts text elements (words, paragraphs, formulas, and barcodes), while **Layout** additionally extracts tables, figures, document structure, hyperlinks, and annotations. These analyzers are useful for general-purpose content extraction, but they don't extract specific custom fields such as invoice amounts or vendor names.
+    > Observação: Os analisadores predefinidos **Read** e **Layout** extraem conteúdo de documentos sem exigir um modelo de IA generativa. **Read** extrai elementos de texto (palavras, parágrafos, fórmulas e códigos de barras), enquanto **Layout** extrai adicionalmente tabelas, figuras, estrutura do documento, hiperlinks e anotações. Esses analisadores são úteis para extração de conteúdo de propósito geral, mas não extraem campos personalizados específicos, como valores de fatura ou nomes de fornecedores.
 
-1. Optionally, go back to the **AI Services** tab and try **Azure Content Understanding - Read** with the same file to compare the results. Notice that Read extracts text without layout analysis.
+1. Opcionalmente, volte para a guia **AI Services** e experimente **Azure Content Understanding - Read** com o mesmo arquivo para comparar os resultados. Observe que Read extrai texto sem análise de layout.
 
-## Set up Content Understanding Studio for custom analyzers
+## Configurar o Content Understanding Studio para analisadores personalizados
 
-To extract specific fields from your content (such as invoice amounts, caller names, or meeting participants), you need to build custom analyzers. Custom analyzers are created in **Content Understanding Studio**, a separate web-based tool for building and testing analyzers with custom schemas.
+Para extrair campos específicos do seu conteúdo (como valores de fatura, nomes de quem ligou ou participantes de reunião), você precisa criar analisadores personalizados. Os analisadores personalizados são criados no **Content Understanding Studio**, uma ferramenta separada baseada na Web para criar e testar analisadores com esquemas personalizados.
 
-1. In a new browser tab, open [Content Understanding Studio](https://contentunderstanding.ai.azure.com) at `https://contentunderstanding.ai.azure.com`.
-1. If prompted, sign in with the same Azure credentials you used for the Foundry portal.
-1. On the **Settings** page (or if redirected to set up your resource), select the **+ Add resource** button.
-1. Select the Foundry resource you created earlier, and select **Next** > **Save**.
+1. Em uma nova guia do navegador, abra o [Content Understanding Studio](https://contentunderstanding.ai.azure.com) em `https://contentunderstanding.ai.azure.com`.
+1. Se solicitado, entre com as mesmas credenciais do Azure que você usou para o portal Foundry.
+1. Na página **Settings** (ou se redirecionado para configurar seu recurso), selecione o botão **+ Add resource**.
+1. Selecione o recurso do Foundry que você criou anteriormente e selecione **Next** > **Save**.
 
-    > **Tip**: Make sure that the **Enable autodeployment for required models if no defaults are available** checkbox is selected. This ensures your resource is set up with the required `GPT-4.1`, `GPT-4.1-mini`, and `text-embedding-3-large` models that custom analyzers need.
+    > Dica: Verifique se a caixa de seleção **Enable autodeployment for required models if no defaults are available** está marcada. Isso garante que seu recurso esteja configurado com os modelos `GPT-4.1`, `GPT-4.1-mini` e `text-embedding-3-large` necessários para analisadores personalizados.
 
-1. After your resource is connected, you're ready to create custom analyzers. Select **Content Understanding** in the top navigation to go to the home page.
+1. Depois que seu recurso estiver conectado, você estará pronto para criar analisadores personalizados. Selecione **Content Understanding** na navegação superior para ir para a página inicial.
 
-## Extract information from invoice documents
+## Extrair informações de documentos de fatura
 
-You are going to build a custom Azure Content Understanding analyzer that can extract specific fields from invoices. You'll create a project in Content Understanding Studio, define a schema based on a sample invoice, and then build a reusable analyzer.
+Você criará um analisador personalizado do Azure Content Understanding que pode extrair campos específicos de faturas. Você criará um projeto no Content Understanding Studio, definirá um esquema com base em uma fatura de exemplo e, em seguida, criará um analisador reutilizável.
 
-### Create a storage account
+### Criar uma conta de armazenamento
 
-Content Understanding Studio requires an Azure Blob Storage account to store the data used for building custom analyzers. You need to create one in the same resource group as your Foundry resource.
+O Content Understanding Studio requer uma conta do Azure Blob Storage para armazenar os dados usados na criação de analisadores personalizados. Você precisa criar uma na mesma grupo de recursos do seu recurso Foundry.
 
-1. In a new browser tab, open the [Azure portal](https://portal.azure.com) at `https://portal.azure.com` and sign in with your Azure credentials.
-1. Select **+ Create a resource**, search for `Storage account`, and create a new **Storage account** resource with the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *The same resource group as your Foundry resource*
-    - **Storage account name**: *Enter a globally unique name*
-    - **Region**: *The same region as your Foundry resource*
-    - **Preferred storage type**: Azure Blob Storage or Azure Data Lake Storage Gen 2
+1. Em uma nova guia do navegador, abra o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com` e entre com suas credenciais do Azure.
+1. Selecione **+ Create a resource**, pesquise `Storage account` e crie um novo recurso **Storage account** com as seguintes configurações:
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *O mesmo grupo de recursos do seu recurso Foundry*
+    - **Storage account name**: *Insira um nome globalmente exclusivo*
+    - **Region**: *A mesma região do seu recurso Foundry*
+    - **Preferred storage type**: Azure Blob Storage ou Azure Data Lake Storage Gen 2
     - **Performance**: Standard
     - **Redundancy**: Locally-redundant storage (LRS)
-1. Select **Review + create**, and then **Create**. Wait for deployment to complete.
+1. Selecione **Review + create** e depois **Create**. Aguarde a conclusão da implantação.
 
-### Define a schema for invoice analysis
+### Definir um esquema para análise de faturas
 
-1. In Content Understanding Studio, select the **Get started** button in the custom projects section, and select **Create**.
-1. Select **Extract content and fields with a custom schema**, then create a project with the following settings:
+1. No Content Understanding Studio, selecione o botão **Get started** na seção de projetos personalizados e selecione **Create**.
+1. Selecione **Extract content and fields with a custom schema** e crie um projeto com as seguintes configurações:
     - **Project name**: `Invoice analysis`
     - **Description**: `Extract data from an invoice`
     - **Advanced settings**
-        - **Connected resource**: *Confirm your Foundry resource is selected*
-        - **Connect storage account**: *Select the storage account you just created*
-        - **Blob container**: *Create a new container named* `content-understanding`
-1. Wait for the project to be created.
+        - **Connected resource**: *Confirme se o seu recurso Foundry está selecionado*
+        - **Connect storage account**: *Selecione a conta de armazenamento que você acabou de criar*
+        - **Blob container**: *Crie um novo contêiner chamado* `content-understanding`
+1. Aguarde a criação do projeto.
 
-    > **Tip**: If an error accessing storage occurs, wait a minute and try again. Permissions for a new resource may take a few minutes to propagate.
+    > Dica: Se ocorrer um erro de acesso ao armazenamento, aguarde um minuto e tente novamente. As permissões para um novo recurso podem levar alguns minutos para se propagar.
 
-1. Upload the **invoice-1234.pdf** file from the folder where you extracted content files.
+1. Faça upload do arquivo **invoice-1234.pdf** da pasta onde você extraiu os arquivos de conteúdo.
 
-    Content Understanding classifies your data and recommends analyzer templates based on the uploaded content.
+    O Content Understanding classifica seus dados e recomenda modelos de analisador com base no conteúdo carregado.
 
-1. In the **Choose a template** window, select the **Invoice** template and select **Save**.
+1. Na janela **Choose a template**, selecione o modelo **Invoice** e selecione **Save**.
 
-    The *Invoice* template includes common fields that are found in invoices. You can use the schema editor to delete any of the suggested fields that you don't need, and add any custom fields that you do.
+    O modelo *Invoice* inclui campos comuns encontrados em faturas. Você pode usar o editor de esquema para excluir qualquer um dos campos sugeridos que não precisar e adicionar quaisquer campos personalizados de que precisar.
 
-1. In the list of suggested fields, select **BillingAddress**. This field is not needed for the invoice format you have uploaded, so use the **Delete field** (**&#128465;**) icon that appears at the end in the selected field row to delete it.
-1. In the top bar of the schema tab, select **Suggest**. This will look at the sample invoice and suggest which fields should be a part of your schema. Expand the **Items** field to see which subfields are suggested. Adding those fields will replace your existing schema, so be careful in your projects if you've edited a schema. Select **Save**.
-1. Use **+ Add new field** button to add the following field, selecting **Save** (**&#10003;**) for each new field:
+1. Na lista de campos sugeridos, selecione **BillingAddress**. Esse campo não é necessário para o formato de fatura que você carregou, portanto, use o ícone **Delete field** (**&#128465;**) que aparece ao final na linha do campo selecionado para excluí-lo.
+1. Na barra superior da guia do esquema, selecione **Suggest**. Isso analisará a fatura de exemplo e sugerirá quais campos devem fazer parte do seu esquema. Expanda o campo **Items** para ver quais subcampos são sugeridos. Adicionar esses campos substituirá seu esquema existente, portanto, tenha cuidado em seus projetos se você tiver editado um esquema. Selecione **Save**.
+1. Use o botão **+ Add new field** para adicionar o seguinte campo, selecionando **Save** (**&#10003;**) para cada novo campo:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `TotalQuantity` | `Total number of items on the invoice` | String | Auto |
 
-1. Verify that your completed schema looks like this, and select **Save**.
+1. Verifique se seu esquema concluído se parece com este e selecione **Save**.
 
-    ![Screenshot of the invoice analyzer schema in Content Understanding Studio showing fields such as VendorName, InvoiceDate, SubTotal, Items, and TotalQuantity.](./media/invoice-schema.png)
+    ![Captura de tela do esquema do analisador de fatura no Content Understanding Studio mostrando campos como VendorName, InvoiceDate, SubTotal, Items e TotalQuantity.](./media/invoice-schema.png)
 
-1. Select the **Test** tab, then select **Run analysis** to test your schema. Wait for analysis to complete.
+1. Selecione a guia **Test**, depois selecione **Run analysis** para testar seu esquema. Aguarde a conclusão da análise.
 
-1. Review the analysis results, which should look similar to this:
+1. Revise os resultados da análise, que devem ser semelhantes a estes:
 
-    ![Screenshot of invoice analysis test results in Content Understanding Studio showing extracted field values from the sample invoice.](./media/invoice-analysis.png)
+    ![Captura de tela dos resultados do teste de análise de fatura no Content Understanding Studio mostrando valores de campos extraídos da fatura de exemplo.](./media/invoice-analysis.png)
 
-1. View the details of the fields that were identified in the **Fields** pane.
+1. Veja os detalhes dos campos que foram identificados no painel **Fields**.
 
-### Build and test an analyzer for invoices
+### Criar e testar um analisador para faturas
 
-Now that you have defined a schema to extract fields from invoices, you can build an analyzer to use with similar documents.
+Agora que você definiu um esquema para extrair campos de faturas, pode criar um analisador para usar com documentos semelhantes.
 
-1. Select the **Build analyzer** button at the top, and build a new analyzer with the following properties (typed exactly as shown here):
+1. Selecione o botão **Build analyzer** na parte superior e crie um novo analisador com as seguintes propriedades (digitadas exatamente como mostrado aqui):
     - **Name**: `invoiceanalyzer`
     - **Description**: `Invoice analyzer`
-1. When the analyzer has been built, select **Jump to analyzer list** to view all built analyzers, then select the **invoiceanalyzer** link. The fields defined in the analyzer's schema will be displayed.
-1. In the **invoiceanalyzer** page, select the **Test** tab.
-1. Upload **invoice-1235.pdf** from the folder where you extracted the content files, and run the analysis to extract field data from the invoice.
+1. Quando o analisador for criado, selecione **Jump to analyzer list** para ver todos os analisadores criados e, em seguida, selecione o link **invoiceanalyzer**. Os campos definidos no esquema do analisador serão exibidos.
+1. Na página **invoiceanalyzer**, selecione a guia **Test**.
+1. Carregue **invoice-1235.pdf** da pasta onde você extraiu os arquivos de conteúdo e execute a análise para extrair dados de campos da fatura.
 
-    The invoice being analyzed looks like this:
+    A fatura que está sendo analisada é assim:
 
-    ![Image of an invoice number 1235.](./media/invoice-1235.png)
+    ![Imagem de uma fatura número 1235.](./media/invoice-1235.png)
 
-1. Review the **Fields** pane, and verify that the analyzer extracted the correct fields from the test invoice.
-1. Review the **Results** pane to see the JSON response that the analyzer would return to a client application.
-1. Close the **invoiceanalyzer** page to return to the analyzer list.
+1. Revise o painel **Fields** e verifique se o analisador extraiu os campos corretos da fatura de teste.
+1. Revise o painel **Results** para ver a resposta JSON que o analisador retornaria a um aplicativo cliente.
+1. Feche a página **invoiceanalyzer** para voltar à lista de analisadores.
 
-## Extract information from a slide image
+## Extrair informações de uma imagem de slide
 
-You are going to build a custom Azure Content Understanding analyzer that can extract information from a slide containing charts.
+Você criará um analisador personalizado do Azure Content Understanding que pode extrair informações de um slide contendo gráficos.
 
-### Define a schema for image analysis
+### Definir um esquema para análise de imagem
 
-1. In **Project list** tab, select **Create** and select **Extract content and fields with a custom schema**, then create a project with the following settings:
+1. Na guia **Project list**, selecione **Create** e selecione **Extract content and fields with a custom schema**; em seguida, crie um projeto com as seguintes configurações:
     - **Project name**: `Slide analysis`
     - **Description**: `Extract data from an image of a slide`
-    - **Advanced settings**: *Verify the settings are the same as the last project*
-1. Wait for the project to be created.
+    - **Advanced settings**: *Verifique se as configurações são as mesmas do último projeto*
+1. Aguarde a criação do projeto.
 
-1. Upload the **slide-1.jpg** file from the folder where you extracted content files. Then select the **Image analysis** template and select **Save**.
+1. Carregue o arquivo **slide-1.jpg** da pasta onde você extraiu os arquivos de conteúdo. Em seguida, selecione o modelo **Image analysis** e selecione **Save**.
 
-    The *Image analysis* template doesn't include any predefined fields. You must define fields to describe the information you want to extract.
+    O modelo *Image analysis* não inclui campos predefinidos. Você deve definir campos para descrever as informações que deseja extrair.
 
-1. Use the **+ Add new field** button to add the following fields, selecting **Save changes** (**&#10003;**) for each new field:
+1. Use o botão **+ Add new field** para adicionar os seguintes campos, selecionando **Save changes** (**&#10003;**) para cada novo campo:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `Title` | `Slide title` | String | Generate |
     | `Summary` | `Summary of the slide` | String | Generate |
     | `Charts` | `Number of charts on the slide` | Integer | Generate |
 
-1. Use **+ Add new field** button to add a new field named `QuarterlyRevenue` with the description `Revenue per quarter` with the value type **List of objects**. Then, select the table icon next to the value type dropdown. In the new page for the table subfields that opens, add the following subfields:
+1. Use o botão **+ Add new field** para adicionar um novo campo chamado `QuarterlyRevenue` com a descrição `Revenue per quarter` com o tipo de valor **List of objects**. Em seguida, selecione o ícone de tabela ao lado da lista suspensa de tipo de valor. Na nova página de subcampos da tabela que se abre, adicione os seguintes subcampos:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `Quarter` | `Which quarter?` | String | Generate |
     | `Revenue` | `Revenue for the quarter` | Number | Generate |
 
-1. Select **Back** to return to the top level of your schema, and use **+ Add new field** button to add a new field named `ProductCategories` with the description `Product categories` with the value type **List of objects**. Then, select the table icon next to the value type to open a new page for the table subfields, add the following subfields:
+1. Selecione **Back** para retornar ao nível superior do seu esquema e use o botão **+ Add new field** para adicionar um novo campo chamado `ProductCategories` com a descrição `Product categories` com o tipo de valor **List of objects**. Em seguida, selecione o ícone de tabela ao lado do tipo de valor para abrir uma nova página para os subcampos da tabela e adicione os seguintes subcampos:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `ProductCategory` | `Product category name` | String | Generate |
     | `RevenuePercentage` | `Percentage of revenue` | Number | Generate |
 
-1. Select **Back** to return to the top level of your schema, and verify that it looks like this. Then select **Save**.
+1. Selecione **Back** para retornar ao nível superior do seu esquema e verifique se ele está como este. Em seguida, selecione **Save**.
 
-    ![Screenshot of the image analyzer schema in Content Understanding Studio showing fields for Title, Summary, Charts, QuarterlyRevenue, and ProductCategories.](./media/slide-schema.png)
+    ![Captura de tela do esquema do analisador de imagem no Content Understanding Studio mostrando campos para Title, Summary, Charts, QuarterlyRevenue e ProductCategories.](./media/slide-schema.png)
 
-1. Select the **Test** tab, then **Run analysis** and wait for analysis to complete.
-1. Review the analysis results, which should look similar to this:
+1. Selecione a guia **Test**, depois **Run analysis** e aguarde a conclusão da análise.
+1. Revise os resultados da análise, que devem se parecer com isto:
 
-    ![Screenshot of image analysis test results in Content Understanding Studio showing extracted fields from the slide including revenue data and product categories.](./media/slide-analysis.png)
+    ![Captura de tela dos resultados do teste de análise de imagem no Content Understanding Studio mostrando campos extraídos do slide, incluindo dados de receita e categorias de produtos.](./media/slide-analysis.png)
 
-1. View the details of the fields that were identified in the **Fields** pane, expanding the **QuarterlyRevenue** and **ProductCategories** fields to see the subfield values.
+1. Veja os detalhes dos campos que foram identificados no painel **Fields**, expandindo os campos **QuarterlyRevenue** e **ProductCategories** para ver os valores dos subcampos.
 
-### Build and test an analyzer
+### Criar e testar um analisador
 
-Now that you have defined a schema to extract fields from slides, you can build an analyzer to use with similar slide images.
+Agora que você definiu um esquema para extrair campos de slides, pode criar um analisador para usar com imagens de slides semelhantes.
 
-1. Select the **Build analyzer** button at the top, and build a new analyzer with the following properties (typed exactly as shown here):
+1. Selecione o botão **Build analyzer** na parte superior e crie um novo analisador com as seguintes propriedades (digitadas exatamente como mostrado aqui):
     - **Name**: `slideanalyzer`
     - **Description**: `Slide image analyzer`
-1. When the analyzer has been built, select **Jump to analyzer list**, then select the **slideanalyzer** link. The fields defined in the analyzer's schema will be displayed.
-1. In the **slideanalyzer** page, select the **Test** tab.
-1. Use the **+ Upload test files** button to upload **slide-2.jpg** from the folder where you extracted the content files, and run the analysis to extract field data from the image.
-1. Review the **Fields** pane, and verify that the analyzer extracted the correct fields from the slide image.
+1. Quando o analisador for criado, selecione **Jump to analyzer list** e, em seguida, selecione o link **slideanalyzer**. Os campos definidos no esquema do analisador serão exibidos.
+1. Na página **slideanalyzer**, selecione a guia **Test**.
+1. Use o botão **+ Upload test files** para carregar **slide-2.jpg** da pasta onde você extraiu os arquivos de conteúdo e execute a análise para extrair dados de campo da imagem.
+1. Revise o painel **Fields** e verifique se o analisador extraiu os campos corretos da imagem do slide.
 
-    > **Note**: Slide 2 doesn't include a breakdown by product category, so the product category revenue data is not found.
+    > Observação: O slide 2 não inclui um detalhamento por categoria de produto, portanto, os dados de receita por categoria de produto não são encontrados.
 
-1. Review the **Results** pane to see the JSON response that the analyzer would return to a client application.
-1. Close the **slideanalyzer** page.
+1. Revise o painel **Results** para ver a resposta JSON que o analisador retornaria a um aplicativo cliente.
+1. Feche a página **slideanalyzer**.
 
-## Extract information from a voicemail audio recording
+## Extrair informações de uma gravação de áudio de correio de voz
 
-You are going to build a custom Azure Content Understanding analyzer that can extract information from an audio recording of a voicemail message.
+Você criará um analisador personalizado do Azure Content Understanding que pode extrair informações de uma gravação de áudio de uma mensagem de voz.
 
-### Define a schema for audio analysis
+### Definir um esquema para análise de áudio
 
-1. In **Project list** tab, select **Create** and select **Extract content and fields with a custom schema**, then create a project with the following settings:
+1. Na guia **Project list**, selecione **Create** e selecione **Extract content and fields with a custom schema**; em seguida, crie um projeto com as seguintes configurações:
     - **Project name**: `Voicemail analysis`
     - **Description**: `Extract data from a voicemail recording`
-    - **Advanced settings**: *Verify the settings are the same as the last project*
-1. Wait for the project to be created.
+    - **Advanced settings**: *Verifique se as configurações são as mesmas do último projeto*
+1. Aguarde a criação do projeto.
 
-1. Upload the **call-1.mp3** file from the folder where you extracted content files. Then select the **Audio analysis** template and select **Save**.
-1. In the **Content** pane on the right, select **Get transcription preview** to see a transcription of the recorded message.
+1. Carregue o arquivo **call-1.mp3** da pasta onde você extraiu os arquivos de conteúdo. Em seguida, selecione o modelo **Audio analysis** e selecione **Save**.
+1. No painel **Content** à direita, selecione **Get transcription preview** para ver uma transcrição da mensagem gravada.
 
-    The *Audio analysis* template doesn't include any predefined fields. You must define fields to describe the information you want to extract.
+    O modelo *Audio analysis* não inclui campos predefinidos. Você deve definir campos para descrever as informações que deseja extrair.
 
-1. Use **+ Add new field** button to add the following fields, selecting **Save** (**&#10003;**) for each new field:
+1. Use o botão **+ Add new field** para adicionar os seguintes campos, selecionando **Save** (**&#10003;**) para cada novo campo:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `Caller` | `Person who left the message` | String | Generate |
     | `Summary` | `Summary of the message` | String | Generate |
@@ -267,61 +267,61 @@ You are going to build a custom Azure Content Understanding analyzer that can ex
     | `CallbackNumber` | `Telephone number to return the call` | String | Generate |
     | `AlternativeContacts` | `Alternative contact details` | List of Strings | Generate |
 
-1. Select **Run analysis** and wait for analysis to complete.
+1. Selecione **Run analysis** e aguarde a conclusão da análise.
 
-    Audio analysis can take some time. While you're waiting, you can play the audio file below:
+    A análise de áudio pode levar algum tempo. Enquanto aguarda, você pode reproduzir o arquivo de áudio abaixo:
 
     <video controls src="./media/call-1.mp4" title="Call 1" width="300">
         <track src="./media/call-1.vtt" kind="captions" srclang="en" label="English">
     </video>
 
-    **Note**: This audio was generated using AI.
+    **Observação**: Este áudio foi gerado usando IA.
 
-1. Review the analysis results and view the details of the fields that were identified in the **Fields** pane, expanding the **AlternativeContacts** field to see the listed values.
+1. Revise os resultados da análise e veja os detalhes dos campos que foram identificados no painel **Fields**, expandindo o campo **AlternativeContacts** para ver os valores listados.
 
-### Build and test an analyzer
+### Criar e testar um analisador
 
-Now that you have defined a schema to extract fields from voice messages, you can build an analyzer to use with similar audio recordings.
+Agora que você definiu um esquema para extrair campos de mensagens de voz, pode criar um analisador para usar com gravações de áudio semelhantes.
 
-1. Select the **Build analyzer** button at the top, and build a new analyzer with the following properties (typed exactly as shown here):
+1. Selecione o botão **Build analyzer** na parte superior e crie um novo analisador com as seguintes propriedades (digitadas exatamente como mostrado aqui):
     - **Name**: `voicemailanalyzer`
     - **Description**: `Voicemail audio analyzer`
-1. When the analyzer has been built, select **Jump to analyzer list**, then select the **voicemailanalyzer** link. The fields defined in the analyzer's schema will be displayed.
-1. In the **voicemailanalyzer** page, select the **Test** tab.
-1. Use the **+ Upload test files** button to upload **call-2.mp3** from the folder where you extracted the content files, and run the analysis to extract field data from the audio file.
+1. Quando o analisador for criado, selecione **Jump to analyzer list** e, em seguida, selecione o link **voicemailanalyzer**. Os campos definidos no esquema do analisador serão exibidos.
+1. Na página **voicemailanalyzer**, selecione a guia **Test**.
+1. Use o botão **+ Upload test files** para carregar **call-2.mp3** da pasta onde você extraiu os arquivos de conteúdo e execute a análise para extrair dados de campo do arquivo de áudio.
 
-    Audio analysis can take some time. While you're waiting, you can play the audio file below:
+    A análise de áudio pode levar algum tempo. Enquanto aguarda, você pode reproduzir o arquivo de áudio abaixo:
 
     <video controls src="./media/call-2.mp4" title="Call 2" width="300">
         <track src="./media/call-2.vtt" kind="captions" srclang="en" label="English">
     </video>
 
-    **Note**: This audio was generated using AI.
+    **Observação**: Este áudio foi gerado usando IA.
 
-1. Review the **Fields** pane, and verify that the analyzer extracted the correct fields from the voice message.
-1. Review the **Results** pane to see the JSON response that the analyzer would return to a client application.
-1. Close the **voicemail-analyzer** page.
+1. Revise o painel **Fields** e verifique se o analisador extraiu os campos corretos da mensagem de voz.
+1. Revise o painel **Results** para ver a resposta JSON que o analisador retornaria a um aplicativo cliente.
+1. Feche a página **voicemail-analyzer**.
 
-## Extract information from a video conference recording
+## Extrair informações de uma gravação de videoconferência
 
-You are going to build a custom Azure Content Understanding analyzer that can extract information from a video recording of a conference call.
+Você criará um analisador personalizado do Azure Content Understanding que pode extrair informações de uma gravação de vídeo de uma chamada de conferência.
 
-### Define a schema for video analysis
+### Definir um esquema para análise de vídeo
 
-1. In Content Understanding Studio, select **Create project** on the home page (or use the navigation to return to the home page first).
-1. Select **Extract content and fields with a custom schema**, then create a project with the following settings:
+1. No Content Understanding Studio, selecione **Create project** na página inicial (ou use a navegação para voltar primeiro à página inicial).
+1. Selecione **Extract content and fields with a custom schema** e crie um projeto com as seguintes configurações:
     - **Project name**: `Conference call video analysis`
     - **Description**: `Extract data from a video conference recording`
-1. Wait for the project to be created.
+1. Aguarde a criação do projeto.
 
-1. Upload the **meeting-1.mp4** file from the folder where you extracted content files. Then select the **Video analysis** template and select **Create**.
-1. In the **Content** pane on the right, select **Get transcription preview** to see a transcription of the recorded meeting.
+1. Carregue o arquivo **meeting-1.mp4** da pasta onde você extraiu os arquivos de conteúdo. Em seguida, selecione o modelo **Video analysis** e selecione **Create**.
+1. No painel **Content** à direita, selecione **Get transcription preview** para ver uma transcrição da reunião gravada.
 
-    The *Video analysis* template extracts data for each segment. It doesn't include any predefined fields. You must define fields to describe the information you want to extract.
+    O modelo *Video analysis* extrai dados para cada segmento. Ele não inclui campos predefinidos. Você deve definir campos para descrever as informações que deseja extrair.
 
-1. Use **+ Add new field** button to add the following fields, selecting **Save** (**&#10003;**) for each new field:
+1. Use o botão **+ Add new field** para adicionar os seguintes campos, selecionando **Save** (**&#10003;**) para cada novo campo:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `Summary` | `Summary of the discussion` | String | Generate |
     | `Participants` | `Count of meeting participants` | Integer | Generate |
@@ -329,55 +329,55 @@ You are going to build a custom Azure Content Understanding analyzer that can ex
     | `SharedSlides` | `Descriptions of any PowerPoint slides presented` | List of Strings | Generate |
     | `AssignedActions` | `Tasks assigned to participants` | List of Objects | Generate |
 
-1. When you enter the **AssignedActions** field, in the table of subfields, create the following subfields:
+1. Ao inserir o campo **AssignedActions**, na tabela de subcampos, crie os seguintes subcampos:
 
-    | Field name | Field description | Value type | Method |
+    | Nome do campo | Descrição do campo | Tipo de valor | Método |
     |--|--|--|--|
     | `Task` | `Description of the task` | String | Generate |
     | `AssignedTo` | `Who the task is assigned to` | String | Generate |
 
-1. Select **Back** to return to the top level of your schema, and verify that it looks like this. Then select **Save**.
+1. Selecione **Back** para retornar ao nível superior do seu esquema e verifique se ele está como este. Em seguida, selecione **Save**.
 
-1. Select **Run analysis** and wait for analysis to complete.
+1. Selecione **Run analysis** e aguarde a conclusão da análise.
 
-    Video analysis can take some time. While you're waiting, you can view the video below:
+    A análise de vídeo pode levar algum tempo. Enquanto aguarda, você pode assistir ao vídeo abaixo:
 
     <video controls src="./media/meeting-1.mp4" title="Meeting 1" width="480">
         <track src="./media/meeting-1.vtt" kind="captions" srclang="en" label="English">
     </video>
 
-    **Note**: This video was generated using AI.
+    **Observação**: Este vídeo foi gerado usando IA.
 
-1. When analysis is complete, review the results.
+1. Quando a análise for concluída, revise os resultados.
 
-1. In the **Fields** pane, view the extracted data.
+1. No painel **Fields**, veja os dados extraídos.
 
-### Build and test an analyzer
+### Criar e testar um analisador
 
-Now that you have defined a schema to extract fields from conference call recordings, you can build an analyzer to use with similar videos.
+Agora que você definiu um esquema para extrair campos de gravações de chamadas de conferência, pode criar um analisador para usar com vídeos semelhantes.
 
-1. Select the **Build analyzer** button at the top, and build a new analyzer with the following properties (typed exactly as shown here):
+1. Selecione o botão **Build analyzer** na parte superior e crie um novo analisador com as seguintes propriedades (digitadas exatamente como mostrado aqui):
     - **Name**: `meetinganalyzer`
     - **Description**: `Meeting video analyzer`
-1. Wait for the new analyzer to be ready (use the **Refresh** button to check).
-1. When the analyzer has been built, select **Jump to analyzer list**, then select the **meetinganalyzer** link. The fields defined in the analyzer's schema will be displayed.
-1. In the **meetinganalyzer** page, select the **Test** tab.
-1. Use the **+ Upload test files** button to upload **meeting-2.mp4** from the folder where you extracted the content files, and run the analysis to extract field data from the video file.
+1. Aguarde o novo analisador ficar pronto (use o botão **Refresh** para verificar).
+1. Quando o analisador for criado, selecione **Jump to analyzer list** e, em seguida, selecione o link **meetinganalyzer**. Os campos definidos no esquema do analisador serão exibidos.
+1. Na página **meetinganalyzer**, selecione a guia **Test**.
+1. Use o botão **+ Upload test files** para carregar **meeting-2.mp4** da pasta onde você extraiu os arquivos de conteúdo e execute a análise para extrair dados de campo do arquivo de vídeo.
 
-    Video analysis can take some time. While you're waiting, you can view the video below:
+    A análise de vídeo pode levar algum tempo. Enquanto aguarda, você pode assistir ao vídeo abaixo:
 
     <video controls src="./media/meeting-2.mp4" title="Meeting 2" width="480">
         <track src="./media/meeting-2.vtt" kind="captions" srclang="en" label="English">
     </video>
 
-    **Note**: This video was generated using AI.
+    **Observação**: Este vídeo foi gerado usando IA.
 
-1. Review the **Fields** pane, and view the fields that the analyzer extracted for each shot in the conference call video.
-1. Review the **Results** pane to see the JSON response that the analyzer would return to a client application.
-1. Close the **meetinganalyzer** page.
+1. Revise o painel **Fields** e veja os campos que o analisador extraiu para cada tomada no vídeo da chamada de conferência.
+1. Revise o painel **Results** para ver a resposta JSON que o analisador retornaria a um aplicativo cliente.
+1. Feche a página **meetinganalyzer**.
 
-## Clean up
+## Limpeza
 
-If you've finished working with the Content Understanding service, you should delete the resources you have created in this exercise to avoid incurring unnecessary Azure costs.
+Se você terminou de trabalhar com o serviço Content Understanding, deve excluir os recursos que criou neste exercício para evitar custos desnecessários do Azure.
 
-1. In the [Azure portal](https://portal.azure.com), delete the resource group you created for this exercise.
+1. No [portal do Azure](https://portal.azure.com), exclua o grupo de recursos que você criou para este exercício.

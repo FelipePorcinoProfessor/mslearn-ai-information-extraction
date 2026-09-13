@@ -1,7 +1,7 @@
 ---
 lab:
-  title: Build an automated RAG ingestion pipeline with Content Understanding
-  description: Use Azure Content Understanding, Azure AI Search, and Azure OpenAI to build a continuous multimodal RAG ingestion pipeline.
+  title: Crie um pipeline de ingestão RAG automatizado com Content Understanding
+  description: Use Azure Content Understanding, Azure AI Search e Azure OpenAI para criar um pipeline contínuo de ingestão RAG multimodal.
   duration: 45
   level: 300
   islab: true
@@ -11,27 +11,27 @@ lab:
     - Azure Content Understanding
 ---
 
-# Build an automated RAG ingestion pipeline with Content Understanding
+# Crie um pipeline de ingestão RAG automatizado com Content Understanding
 
-Retrieval-augmented generation (RAG) is a method that enhances Large Language Models (LLMs) by integrating data from external knowledge sources. In production scenarios, new documents arrive continuously and must be extracted, embedded, and indexed so they're available for search in near real-time.
+Retrieval-augmented generation (RAG) é um método que aprimora Large Language Models (LLMs) ao integrar dados de fontes de conhecimento externas. Em cenários de produção, novos documentos chegam continuamente e precisam ser extraídos, embedded e indexados para ficarem disponíveis para pesquisa quase em tempo real.
 
-In this exercise, you'll build an automated RAG ingestion pipeline that uses Azure Content Understanding to extract content from multimodal documents, embeds the content using Azure OpenAI, and indexes it in Azure AI Search. The pipeline tracks which files have already been processed and can run in **watch mode** to automatically detect and ingest new documents as they arrive. You'll finish by creating a conversational agent that answers questions grounded in your indexed data.
+Neste exercício, você criará um pipeline automatizado de ingestão RAG que usa Azure Content Understanding para extrair conteúdo de documentos multimodais, faz o embedding do conteúdo com Azure OpenAI e o indexa no Azure AI Search. O pipeline acompanha quais arquivos já foram processados e pode ser executado em **watch mode** para detectar e ingerir automaticamente novos documentos assim que eles chegarem. Você finalizará criando um agente conversacional que responde a perguntas com base nos seus dados indexados.
 
-This exercise takes approximately **45** minutes.
+Este exercício leva aproximadamente **45** minutos.
 
-## Create Azure resources
+## Criar recursos do Azure
 
-You need several Azure resources for this pipeline: a Microsoft Foundry resource (for Content Understanding and Azure OpenAI), and an Azure AI Search resource.
+Você precisa de vários recursos do Azure para este pipeline: um recurso Microsoft Foundry (para Content Understanding e Azure OpenAI) e um recurso Azure AI Search.
 
-### Create a Microsoft Foundry resource and project
+### Criar um recurso e projeto Microsoft Foundry
 
-1. In a web browser, open the [Microsoft Foundry portal](https://ai.azure.com) at `https://ai.azure.com` and sign in using your Azure credentials. Close any tips or quick start panes that are opened the first time you sign in.
-1. Make sure the **New Foundry** toggle is on so that you're using **Foundry (new)**.
-1. Select the project name in the upper-left corner, and then select **Create new project**.
-1. Give your project a name and expand **Advanced options** to specify the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *Create or select a resource group*
-    - **Location**: Choose one of the following supported regions:\*
+1. Em um navegador da Web, abra o [portal Microsoft Foundry](https://ai.azure.com) em `https://ai.azure.com` e entre com suas credenciais do Azure. Feche quaisquer dicas ou painéis de início rápido abertos na primeira vez em que você entrar.
+1. Verifique se a alternância **New Foundry** está ativada para que você esteja usando o **Foundry (new)**.
+1. Selecione o nome do projeto no canto superior esquerdo e, em seguida, selecione **Create new project**.
+1. Dê um nome ao projeto e expanda **Advanced options** para especificar as seguintes configurações:
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *Crie ou selecione um grupo de recursos*
+    - **Location**: Escolha uma das seguintes regiões com suporte:\*
         - Australia East
         - East US
         - East US 2
@@ -45,64 +45,64 @@ You need several Azure resources for this pipeline: a Microsoft Foundry resource
         - West US
         - West US 3
 
-    > \*Azure Content Understanding is available in selected regions. See the [region support documentation](https://learn.microsoft.com/azure/ai-services/content-understanding/language-region-support) for the latest availability.
+    > \*Azure Content Understanding está disponível em regiões selecionadas. Consulte a [documentação de suporte de regiões](https://learn.microsoft.com/azure/ai-services/content-understanding/language-region-support) para a disponibilidade mais recente.
 
-1. Select **Create** and wait for your project to be created. This will create a project and the parent resource.
-1. Once created, select the project name at the top of the page, and select **Project details**. On that page, follow the link to the parent resource. Leave this browser tab open.
+1. Selecione **Create** e aguarde a criação do projeto. Isso criará um projeto e o recurso pai.
+1. Após a criação, selecione o nome do projeto na parte superior da página e selecione **Project details**. Nessa página, siga o link para o recurso pai. Deixe essa guia do navegador aberta.
 
-### Configure Content Understanding models and connection
+### Configurar modelos e conexão do Content Understanding
 
-Content Understanding uses OpenAI models for analysis that are deployed in your project. You need to deploy these models before using analyzers, and set up the connection between Content Understanding and your Foundry resource. The easiest way is through the Content Understanding Studio.
+O Content Understanding usa modelos OpenAI para análise que são implantados no seu projeto. Você precisa implantar esses modelos antes de usar analisadores e configurar a conexão entre o Content Understanding e seu recurso Foundry. A maneira mais fácil é por meio do Content Understanding Studio.
 
-1. In a new tab, navigate to [Content Understanding Studio](https://contentunderstanding.ai.azure.com/home) at `https://contentunderstanding.ai.azure.com/home` and sign in with your credentials.
-1. Select the settings gear icon on the top navigation bar, and select **+ Add resource**.
-1. Select your subscription and resource group where you created your Foundry resource, then select your Foundry resource name from the dropdown. This resource is the parent resource to the project you previously created.
-1. Ensure the **Enable auto-deployment** box is checked, then select **Next** and **Save** to create the configuration.
-1. Wait while it deploys the required models for Content Understanding.
+1. Em uma nova guia, acesse o [Content Understanding Studio](https://contentunderstanding.ai.azure.com/home) em `https://contentunderstanding.ai.azure.com/home` e entre com suas credenciais.
+1. Selecione o ícone de engrenagem de configurações na barra de navegação superior e selecione **+ Add resource**.
+1. Selecione sua assinatura e o grupo de recursos onde você criou seu recurso Foundry e, em seguida, selecione o nome do seu recurso Foundry na lista. Esse recurso é o recurso pai do projeto que você criou anteriormente.
+1. Certifique-se de que a caixa **Enable auto-deployment** esteja marcada, depois selecione **Next** e **Save** para criar a configuração.
+1. Aguarde enquanto os modelos necessários para o Content Understanding são implantados.
 
-### Create an Azure AI Search resource
+### Criar um recurso Azure AI Search
 
-1. In a new browser tab, open the [Azure portal](https://portal.azure.com) at `https://portal.azure.com` and sign in with your Azure credentials.
-1. Select **&#65291;Create a resource**, search for `Azure AI Search`, and create an **Azure AI Search** resource with the following settings:
-    - **Subscription**: *Your Azure subscription*
-    - **Resource group**: *The same resource group as your Microsoft Foundry resource*
-    - **Service name**: *A valid unique name*
-    - **Location**: *The same location as your Microsoft Foundry resource*
-    - **Pricing tier**: Free or Basic
-1. Wait for deployment to complete.
+1. Em uma nova guia do navegador, abra o [portal do Azure](https://portal.azure.com) em `https://portal.azure.com` e entre com suas credenciais do Azure.
+1. Selecione **&#65291;Create a resource**, pesquise por `Azure AI Search` e crie um recurso **Azure AI Search** com as seguintes configurações:
+    - **Subscription**: *Sua assinatura do Azure*
+    - **Resource group**: *O mesmo grupo de recursos do seu recurso Microsoft Foundry*
+    - **Service name**: *Um nome exclusivo válido*
+    - **Location**: *A mesma localização do seu recurso Microsoft Foundry*
+    - **Pricing tier**: Free ou Basic
+1. Aguarde a conclusão da implantação.
 
-### Gather credentials
+### Coletar credenciais
 
-You'll need the following values to configure the pipeline. Note them from the Azure portal:
+Você precisará dos seguintes valores para configurar o pipeline. Anote-os no portal do Azure:
 
-- **Foundry endpoint**: From the parent resource tab you left open, copy the **Endpoint** from the **Overview** page (e.g., `https://<name>.services.ai.azure.com/`).
-- **Foundry API key**: From the same page, select **Resource Management** > **Keys and Endpoint** and copy one of the **Keys**.
-- **Azure AI Search endpoint**: From your AI Search resource's **Overview** page in the Azure portal (e.g., `https://<name>.search.windows.net`).
-- **Model deployments**: From the Foundry Home page, select **Build** > **Deployments** to view your deployed models. Note that there is a number at the end of your embedding model name, which you'll need to update in your `.env` file.
-- **Azure AI Search admin key**: From your AI Search resource's **Settings** > **Keys** page.
+- **Foundry endpoint**: Na guia do recurso pai que você deixou aberta, copie o **Endpoint** da página **Overview** (por exemplo, `https://<name>.services.ai.azure.com/`).
+- **Foundry API key**: Na mesma página, selecione **Resource Management** > **Keys and Endpoint** e copie uma das **Keys**.
+- **Azure AI Search endpoint**: Na página **Overview** do seu recurso AI Search no portal do Azure (por exemplo, `https://<name>.search.windows.net`).
+- **Model deployments**: Na página Foundry Home, selecione **Build** > **Deployments** para ver seus modelos implantados. Observe que há um número no final do nome do seu modelo de embedding, que você precisará atualizar no arquivo `.env`.
+- **Azure AI Search admin key**: Na página **Settings** > **Keys** do seu recurso AI Search.
 
-    > **Note**: The Foundry endpoint and key are used for both Content Understanding and Azure OpenAI, since both services are included in the same Foundry resource.
+    > **Observação**: O endpoint e a chave do Foundry são usados tanto para o Content Understanding quanto para o Azure OpenAI, já que ambos os serviços estão incluídos no mesmo recurso Foundry.
 
-## Prepare the development environment
+## Preparar o ambiente de desenvolvimento
 
-You'll use Visual Studio Code as your development environment.
+Você usará o Visual Studio Code como seu ambiente de desenvolvimento.
 
-1. Start **Visual Studio Code**.
-1. Open the Command Palette (press **Ctrl+Shift+P**), type **Git: Clone**, and select it.
-1. In the URL bar, paste the following repository URL and press **Enter**:
+1. Inicie o **Visual Studio Code**.
+1. Abra a Paleta de Comandos (pressione **Ctrl+Shift+P**), digite **Git: Clone** e selecione.
+1. Na barra de URL, cole o seguinte repositório e pressione **Enter**:
 
     ```
     https://github.com/microsoftlearning/mslearn-ai-information-extraction
     ```
 
-1. Choose a local folder to clone into, and then when prompted, select **Open** to open the cloned repository in VS Code.
-1. Open a new terminal and navigate to the RAG pipeline folder:
+1. Escolha uma pasta local para clonar e, quando solicitado, selecione **Open** para abrir o repositório clonado no VS Code.
+1. Abra um novo terminal e navegue até a pasta do pipeline RAG:
 
     ```
     cd Labfiles/05-rag-pipeline
     ```
 
-1. Install the required Python packages:
+1. Instale os pacotes Python necessários:
 
     ```
     python -m venv labenv
@@ -110,72 +110,72 @@ You'll use Visual Studio Code as your development environment.
     pip install -r requirements.txt
     ```
 
-    > **Note**: The requirements.txt installs the [azure-ai-contentunderstanding](https://learn.microsoft.com/python/api/overview/azure/ai-contentunderstanding-readme?view=azure-python-preview) SDK, the [azure-search-documents](https://learn.microsoft.com/python/api/overview/azure/search-documents-readme?view=azure-python) SDK, and the [openai](https://pypi.org/project/openai/) package.
+    > **Observação**: O requirements.txt instala o SDK [azure-ai-contentunderstanding](https://learn.microsoft.com/python/api/overview/azure/ai-contentunderstanding-readme?view=azure-python-preview), o SDK [azure-search-documents](https://learn.microsoft.com/python/api/overview/azure/search-documents-readme?view=azure-python) e o pacote [openai](https://pypi.org/project/openai/).
 
-1. In the VS Code Explorer pane, open the **.env** file in **Labfiles/05-rag-pipeline**.
-1. Replace the placeholder values in the `.env` file with the credentials you gathered earlier:
-    - `FOUNDRY_ENDPOINT` — Your Microsoft Foundry resource endpoint
-    - `FOUNDRY_KEY` — Your Microsoft Foundry resource API key
-    - `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` — Your chat model deployment name (e.g., `gpt-4.1-######`)
-    - `AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME` — Your embedding model deployment name (e.g., `text-embedding-3-large-######`)
-    - `AZURE_SEARCH_ENDPOINT` — Your Azure AI Search endpoint
-    - `AZURE_SEARCH_KEY` — Your Azure AI Search admin key
-1. Save the file (**CTRL+S**).
+1. No painel Explorer do VS Code, abra o arquivo **.env** em **Labfiles/05-rag-pipeline**.
+1. Substitua os valores de placeholder no arquivo `.env` pelas credenciais que você coletou anteriormente:
+    - `FOUNDRY_ENDPOINT` — O endpoint do seu recurso Microsoft Foundry
+    - `FOUNDRY_KEY` — A API key do seu recurso Microsoft Foundry
+    - `AZURE_OPENAI_CHAT_DEPLOYMENT_NAME` — O nome da implantação do seu modelo de chat (por exemplo, `gpt-4.1-######`)
+    - `AZURE_OPENAI_EMBEDDING_DEPLOYMENT_NAME` — O nome da implantação do seu modelo de embedding (por exemplo, `text-embedding-3-large-######`)
+    - `AZURE_SEARCH_ENDPOINT` — O endpoint do seu Azure AI Search
+    - `AZURE_SEARCH_KEY` — A admin key do seu Azure AI Search
+1. Salve o arquivo (**CTRL+S**).
 
-### Download sample documents
+### Baixar documentos de exemplo
 
-The RAG pipeline needs documents to process. You'll use the same travel brochure documents from the knowledge mining exercise.
+O pipeline RAG precisa de documentos para processar. Você usará os mesmos folhetos de viagem do exercício de extração de conhecimento.
 
-1. Download [documents.zip](https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip) from `https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip`.
-1. Extract the PDF files from the zip and copy them into the **Labfiles/05-rag-pipeline/data** folder.
-1. Verify the files are in place by checking the data folder in VS Code Explorer or running in your terminal:
+1. Baixe [documents.zip](https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip) de `https://github.com/microsoftlearning/mslearn-ai-information-extraction/raw/main/Labfiles/knowledge/documents.zip`.
+1. Extraia os arquivos PDF do zip e copie-os para a pasta **Labfiles/05-rag-pipeline/data**.
+1. Verifique se os arquivos estão no lugar conferindo a pasta data no VS Code Explorer ou executando no seu terminal:
 
     ```
     dir data
     ```
 
-## Step 1: Create a Content Understanding analyzer
+## Etapa 1: Criar um analisador do Content Understanding
 
-The first step in the pipeline is to create an analyzer that will extract structured content from documents. You'll use the Content Understanding Python SDK to create an analyzer programmatically.
+A primeira etapa do pipeline é criar um analisador que extraia conteúdo estruturado dos documentos. Você usará o Content Understanding Python SDK para criar um analisador de forma programática.
 
-1. In VS Code, open the **create-analyzer.py** file.
+1. No VS Code, abra o arquivo **create-analyzer.py**.
 
-1. Review the code, which:
-    - Loads environment variables from the `.env` file.
-    - Creates a `ContentUnderstandingClient` using the endpoint and API key.
-    - Defines a document analyzer with a field extraction schema to capture summaries and key topics.
-    - Creates the analyzer by calling `begin_create_analyzer`.
+1. Analise o código, que:
+    - Carrega variáveis de ambiente do arquivo `.env`.
+    - Cria um `ContentUnderstandingClient` usando o endpoint e a API key.
+    - Define um analisador de documentos com um esquema de extração de campos para capturar resumos e tópicos principais.
+    - Cria o analisador chamando `begin_create_analyzer`.
 
-1. In the VS Code terminal (make sure the virtual environment is activated), run the script:
+1. No terminal do VS Code (verifique se o ambiente virtual está ativado), execute o script:
 
     ```
     python create-analyzer.py
     ```
 
-1. Wait for the analyzer to be created. The output should confirm that the analyzer was created successfully.
+1. Aguarde a criação do analisador. A saída deve confirmar que o analisador foi criado com sucesso.
 
-## Step 2: Run the automated ingestion pipeline
+## Etapa 2: Executar o pipeline de ingestão automatizado
 
-Now you'll run the automated ingestion pipeline. This single script handles the entire flow — extracting content with Content Understanding, generating vector embeddings with Azure OpenAI, and indexing into Azure AI Search. It also tracks which files have been processed so it can detect new or updated documents on subsequent runs.
+Agora você executará o pipeline de ingestão automatizado. Este script único lida com todo o fluxo — extraindo conteúdo com o Content Understanding, gerando embeddings vetoriais com o Azure OpenAI e indexando no Azure AI Search. Ele também rastreia quais arquivos foram processados para poder detectar documentos novos ou atualizados em execuções subsequentes.
 
-1. In VS Code, open the **ingest-pipeline.py** file.
+1. No VS Code, abra o arquivo **ingest-pipeline.py**.
 
-1. Review the code and notice how it:
-    - **Tracks processed files** using a manifest (`processed_files.json`) that records the SHA-256 hash of each file. On each run, the pipeline compares the current hash of every file in the `data/` folder against the manifest, so only new or modified files are processed.
-    - **Ensures the search index exists** by calling `ensure_index()`, which creates or updates the Azure AI Search index with the required schema (text fields, a vector field, and HNSW vector search configuration).
-    - **Extracts content** from each new file by submitting it to the Content Understanding analyzer via `begin_analyze_binary`, which returns markdown content and extracted fields (summary, key topics).
-    - **Chunks the content** by splitting at paragraph boundaries with a 2000-character limit, keeping each chunk self-contained.
-    - **Generates embeddings** for each chunk using the Azure OpenAI embedding model, producing a 3072-dimension vector for semantic search.
-    - **Indexes the chunks** into Azure AI Search using deterministic document IDs (based on the file name and chunk index), so re-ingesting an updated file replaces its old chunks.
-    - Supports a `--watch` flag for continuous monitoring and a `--reset` flag to reprocess all files.
+1. Analise o código e observe como ele:
+    - **Rastreia arquivos processados** usando um manifesto (`processed_files.json`) que registra o hash SHA-256 de cada arquivo. A cada execução, o pipeline compara o hash atual de cada arquivo na pasta `data/` com o manifesto, de modo que apenas arquivos novos ou modificados sejam processados.
+    - **Garante que o índice de pesquisa exista** chamando `ensure_index()`, que cria ou atualiza o índice do Azure AI Search com o esquema necessário (campos de texto, um campo vetorial e configuração de pesquisa vetorial HNSW).
+    - **Extrai conteúdo** de cada novo arquivo enviando-o ao analisador do Content Understanding via `begin_analyze_binary`, que retorna conteúdo em markdown e campos extraídos (resumo, tópicos principais).
+    - **Divide o conteúdo em chunks** separando nos limites de parágrafo com limite de 2000 caracteres, mantendo cada chunk autocontido.
+    - **Gera embeddings** para cada chunk usando o modelo de embedding do Azure OpenAI, produzindo um vetor de 3072 dimensões para pesquisa semântica.
+    - **Indexa os chunks** no Azure AI Search usando IDs de documento determinísticos (com base no nome do arquivo e no índice do chunk), de modo que a reingestão de um arquivo atualizado substitua seus chunks antigos.
+    - Oferece suporte a um sinalizador `--watch` para monitoramento contínuo e a um sinalizador `--reset` para reprocessar todos os arquivos.
 
-1. In the VS Code terminal, run the pipeline:
+1. No terminal do VS Code, execute o pipeline:
 
     ```
     python ingest-pipeline.py
     ```
 
-1. Watch the output as the pipeline processes each document. You'll see timestamped log messages showing each file being extracted, chunks being embedded, and results being indexed. For example:
+1. Observe a saída enquanto o pipeline processa cada documento. Você verá mensagens de log com carimbo de data/hora mostrando cada arquivo sendo extraído, chunks sendo embedded e resultados sendo indexados. Por exemplo:
 
     ```
     [14:23:01] Verifying search index...
@@ -189,61 +189,61 @@ Now you'll run the automated ingestion pipeline. This single script handles the 
     ...
     ```
 
-1. After the pipeline finishes, check that it created a **processed_files.json** file in the rag-pipeline folder. This manifest records the hash of each processed file — if you run the pipeline again, it will detect that there are no new files:
+1. Após a conclusão do pipeline, verifique se foi criado um arquivo **processed_files.json** na pasta rag-pipeline. Esse manifesto registra o hash de cada arquivo processado — se você executar o pipeline novamente, ele detectará que não há novos arquivos:
 
     ```
     python ingest-pipeline.py
     ```
 
-    The output should say "No new files to ingest — all documents are up to date."
+    A saída deve dizer "Nenhum novo arquivo para ingerir — todos os documentos estão atualizados."
 
-## Step 3: Query the index with a RAG agent
+## Etapa 3: Consultar o índice com um agente RAG
 
-With the content indexed, you can use a conversational agent that retrieves relevant content and uses an OpenAI chat model to answer questions.
+Com o conteúdo indexado, você pode usar um agente conversacional que recupera conteúdo relevante e usa um modelo de chat do OpenAI para responder às perguntas.
 
-1. In VS Code, open the **rag-agent.py** file.
+1. No VS Code, abra o arquivo **rag-agent.py**.
 
-1. Review the code, which:
-    - Creates an Azure AI Search client to retrieve documents.
-    - Creates an Azure OpenAI chat client.
-    - Implements a retrieval function that performs hybrid search (combining keyword and vector search) to find the most relevant content chunks.
-    - Constructs a prompt that includes the retrieved context and the user's question.
-    - Sends the prompt to the chat model for answer generation.
-    - Runs a conversational loop so you can ask multiple questions.
+1. Analise o código, que:
+    - Cria um cliente do Azure AI Search para recuperar documentos.
+    - Cria um cliente de chat do Azure OpenAI.
+    - Implementa uma função de recuperação que realiza pesquisa híbrida (combinando pesquisa por palavra-chave e vetorial) para encontrar os chunks de conteúdo mais relevantes.
+    - Constrói um prompt que inclui o contexto recuperado e a pergunta do usuário.
+    - Envia o prompt ao modelo de chat para geração da resposta.
+    - Executa um loop conversacional para que você possa fazer várias perguntas.
 
-1. In the VS Code terminal, run the agent:
+1. No terminal do VS Code, execute o agente:
 
     ```
     python rag-agent.py
     ```
 
-1. When prompted, enter a question about the content you indexed. For example:
+1. Quando solicitado, insira uma pergunta sobre o conteúdo que você indexou. Por exemplo:
     - `What destinations are featured in the travel brochures?`
     - `What activities are recommended in Dubai?`
     - `Tell me about the Margie's Travel company`
 
-1. Review the agent's responses. They should be grounded in the actual content extracted from the documents, with answers that cite the source document names. When you're satisfied, type `quit` to exit the agent.
+1. Analise as respostas do agente. Elas devem estar fundamentadas no conteúdo real extraído dos documentos, com respostas que citam os nomes dos documentos de origem. Quando estiver satisfeito, digite `quit` para sair do agente.
 
-## Step 4: Ingest new documents automatically
+## Etapa 4: Ingerir novos documentos automaticamente
 
-The real power of this pipeline is continuous ingestion. You'll now start the pipeline in watch mode so it monitors the `data/` folder, then add a new document and watch it get automatically extracted, embedded, and indexed.
+O verdadeiro poder deste pipeline é a ingestão contínua. Agora você iniciará o pipeline em watch mode para que ele monitore a pasta `data/` e, em seguida, adicionará um novo documento e observará ele ser automaticamente extraído, embedded e indexado.
 
-### Start the pipeline in watch mode
+### Iniciar o pipeline em watch mode
 
-1. In VS Code, open a **second terminal** (select **Terminal** > **New Terminal**). Make sure you activate the virtual environment and navigate to the pipeline folder:
+1. No VS Code, abra um **segundo terminal** (selecione **Terminal** > **New Terminal**). Certifique-se de ativar o ambiente virtual e navegar até a pasta do pipeline:
 
     ```
     cd Labfiles\05-rag-pipeline
     labenv\Scripts\activate
     ```
 
-1. Start the pipeline in watch mode:
+1. Inicie o pipeline em watch mode:
 
     ```
     python ingest-pipeline.py --watch
     ```
 
-    The pipeline will begin polling the `data/` folder every 30 seconds. You should see output like:
+    O pipeline começará a fazer polling da pasta `data/` a cada 30 segundos. Você deverá ver uma saída como:
 
     ```
     [14:30:00] Watching 'data/' for new documents (press Ctrl+C to stop)...
@@ -251,13 +251,13 @@ The real power of this pipeline is continuous ingestion. You'll now start the pi
     [14:30:01] No new files. Waiting...
     ```
 
-    Leave this terminal running.
+    Deixe este terminal em execução.
 
-### Add a new document
+### Adicionar um novo documento
 
-1. Switch to the VS Code Explorer pane and right-click the **data** folder under **Labfiles/05-rag-pipeline**. Select **New File** and name it **tokyo-guide.txt**.
+1. Mude para o painel Explorer do VS Code e clique com o botão direito na pasta **data** em **Labfiles/05-rag-pipeline**. Selecione **New File** e nomeie-o como **tokyo-guide.txt**.
 
-1. Add the following content to the new file and save it:
+1. Adicione o seguinte conteúdo ao novo arquivo e salve:
 
     ```text
     Tokyo Travel Guide
@@ -296,7 +296,7 @@ The real power of this pipeline is continuous ingestion. You'll now start the pi
     while winters are mild compared to northern Japan.
     ```
 
-1. Switch back to the terminal running the pipeline in watch mode. Within 30 seconds, you should see the pipeline detect and process the new file:
+1. Volte para o terminal que está executando o pipeline em watch mode. Em até 30 segundos, você deverá ver o pipeline detectar e processar o novo arquivo:
 
     ```
     [14:31:00] Detected 1 new/updated file(s).
@@ -306,31 +306,31 @@ The real power of this pipeline is continuous ingestion. You'll now start the pi
     [14:31:06] Ingestion complete — 1 file(s), 1 chunk(s) indexed.
     ```
 
-### Query the newly ingested content
+### Consultar o conteúdo recém-ingestido
 
-1. Switch to your **first terminal** (or open a new one with the virtual environment activated) and run the RAG agent again:
+1. Volte ao seu **primeiro terminal** (ou abra um novo com o ambiente virtual ativado) e execute o agente RAG novamente:
 
     ```
     python rag-agent.py
     ```
 
-1. Ask a question about the newly added document:
+1. Faça uma pergunta sobre o documento recém-adicionado:
     - `What can you tell me about Tokyo?`
     - `What are the top attractions in Tokyo?`
     - `How do I get around in Tokyo?`
 
-1. The agent should now return answers grounded in the Tokyo travel guide — content that wasn't available during your first query session. This demonstrates how the continuous pipeline makes new knowledge available without any manual reprocessing.
+1. Agora o agente deve retornar respostas fundamentadas no guia de viagem de Tóquio — conteúdo que não estava disponível durante sua primeira sessão de consulta. Isso demonstra como o pipeline contínuo disponibiliza novos conhecimentos sem qualquer reprocessamento manual.
 
-1. Type `quit` to exit the agent, then switch to the watch-mode terminal and press **Ctrl+C** to stop the pipeline.
+1. Digite `quit` para sair do agente e, em seguida, alterne para o terminal em watch mode e pressione **Ctrl+C** para parar o pipeline.
 
-## Clean up
+## Limpeza
 
-If you've finished working with the RAG pipeline, you should delete the resources you created in this exercise to avoid incurring unnecessary Azure costs.
+Se você terminou de trabalhar com o pipeline RAG, exclua os recursos criados neste exercício para evitar custos desnecessários do Azure.
 
-1. In the [Azure portal](https://portal.azure.com), delete the resource group you created for this exercise.
+1. No [portal do Azure](https://portal.azure.com), exclua o grupo de recursos que você criou para este exercício.
 
-## More information
+## Mais informações
 
-- [Tutorial: Build a RAG solution with Content Understanding](https://learn.microsoft.com/azure/ai-services/content-understanding/tutorial/build-rag-solution)
-- [Retrieval-augmented generation in Azure AI Search](https://learn.microsoft.com/azure/search/retrieval-augmented-generation-overview)
+- [Tutorial: Crie uma solução RAG com Content Understanding](https://learn.microsoft.com/azure/ai-services/content-understanding/tutorial/build-rag-solution)
+- [Retrieval-augmented generation no Azure AI Search](https://learn.microsoft.com/azure/search/retrieval-augmented-generation-overview)
 - [Azure Content Understanding Python SDK](https://pypi.org/project/azure-ai-contentunderstanding/)
