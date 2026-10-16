@@ -9,6 +9,7 @@ lab:
   primarytopics:
     - Azure
     - Azure Document Intelligence
+layout: default
 ---
 
 # Extrair dados com Azure Document Intelligence

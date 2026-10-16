@@ -9,6 +9,7 @@ lab:
   primarytopics:
     - Azure
     - Azure Content Understanding
+layout: default
 ---
 
 # Desenvolver um aplicativo cliente do Content Understanding

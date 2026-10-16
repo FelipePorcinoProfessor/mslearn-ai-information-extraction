@@ -9,6 +9,7 @@ lab:
   primarytopics:
     - Azure
     - Azure Content Understanding
+layout: default
 ---
 
 # Extrair informações de conteúdo multimodal

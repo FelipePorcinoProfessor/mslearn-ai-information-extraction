@@ -8,6 +8,7 @@ lab:
   status: 'released'
   primarytopics:
     - Azure
+layout: default
 ---
 
 # Criar uma solução de mineração de conhecimento

@@ -9,6 +9,7 @@ lab:
   primarytopics:
     - Azure
     - Azure Content Understanding
+layout: default
 ---
 
 # Crie um pipeline de ingestão RAG automatizado com Content Understanding
